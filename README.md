@@ -1,2 +1,2 @@
 # MuscuProject
-Website for a fictive sport room for a project
+Website for a fictive sport room, for a project.
