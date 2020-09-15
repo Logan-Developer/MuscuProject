@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - Salle de sport{% endblock %}
+
+{% block titrePage %}Inscription{% endblock %}
+
+{% block body %}
+    <div class="main">
+
+        <div class="card">
+            {{ form_start(inscription_form) }}
+                <div class="alert-danger">{{ form_errors(inscription_form) }}</div>
+                <label class="form-label">Prénom</label>{{ form_widget(inscription_form.prenom) }}
+                {{ form_row(inscription_form.nom) }}
+                {{ form_row(inscription_form.email) }}
+                <label class="form-label">Mot de passe</label>{{ form_widget(inscription_form.mdp) }}
+                <label for="verifPwd" class="form-label" >Vérification du mot de passe</label>
+                <input type="password" required class="form-control" id="verifPwd">
+            {{ form_end(inscription_form) }}
+        </div>
+    </div>
+{% endblock %}
