@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\DemandesContactRepository;
+use App\Repository\ContactRequestsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=DemandesContactRepository::class)
  */
-class DemandesContact
+class ContactRequests
 {
     /**
      * @ORM\Id
@@ -25,7 +25,7 @@ class DemandesContact
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $titreMessage;
+    private $messageTitle;
 
     /**
      * @ORM\Column(type="text")
@@ -35,18 +35,6 @@ class DemandesContact
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdDemande(): ?int
-    {
-        return $this->idDemande;
-    }
-
-    public function setIdDemande(int $idDemande): self
-    {
-        $this->idDemande = $idDemande;
-
-        return $this;
     }
 
     public function getEmail(): ?string
@@ -61,14 +49,14 @@ class DemandesContact
         return $this;
     }
 
-    public function getTitreMessage(): ?string
+    public function getMessageTitle(): ?string
     {
-        return $this->titreMessage;
+        return $this->messageTitle;
     }
 
-    public function setTitreMessage(?string $titreMessage): self
+    public function setMessageTitle(?string $messageTitle): self
     {
-        $this->titreMessage = $titreMessage;
+        $this->messageTitle = $messageTitle;
 
         return $this;
     }

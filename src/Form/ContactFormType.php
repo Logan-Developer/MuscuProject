@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\DemandesContact;
+use App\Entity\ContactRequests;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,16 +15,16 @@ class ContactFormType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class)
-            ->add('titreMessage')
+            ->add('messageTitle')
             ->add('message')
-            ->add('envoyer', SubmitType::class)
+            ->add('send', SubmitType::class)
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => DemandesContact::class,
+            'data_class' => ContactRequests::class,
         ]);
     }
 }

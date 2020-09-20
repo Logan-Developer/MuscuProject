@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\DemandesContact;
+use App\Entity\ContactRequests;
 use App\Form\ContactFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,9 +14,9 @@ class ContactController extends AbstractController
      */
     public function index()
     {
-        $demandesContact = new DemandesContact();
+        $ContactRequests = new ContactRequests();
 
-        $contactForm = $this->createForm(ContactFormType::class, $demandesContact);
+        $contactForm = $this->createForm(ContactFormType::class, $ContactRequests);
 
         return $this->render('contact/index.html.twig',[
             'contact_form'=> $contactForm->createView(),
