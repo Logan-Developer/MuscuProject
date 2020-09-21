@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - Salle de sport{% endblock %}
+
+{% block pageTitle %}Connexion{% endblock %}
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('login') }}
+{% endblock %}
+
+{% block body %}
+<form method="post">
+
+    <div class="card">
+        <form>
+            <label for="inputEmail">Email</label>
+            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" required autofocus>
+            <label for="inputPassword">Mot de passe</label>
+            <input type="password" name="password" id="inputPassword" class="form-control" required>
+
+            <input type="hidden" name="_csrf_token"
+                   value="{{ csrf_token('authenticate') }}">
+
+            <div class="checkbox mb-3">
+                <label><input type="checkbox" name="_remember_me"> Se souvenir de moi</label>
+            </div>
+
+            <button class="btn btn-primary" type="submit">
+                Se connecter
+            </button>
+
+            {% if error %}
+
+                {% if error.messageKey|trans(error.messageData, 'security') == 'Invalid credentials.' %}
+                    <div class="alert alert-danger">Identifiants incorrects!</div>
+                {% else %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+            {% endif %}
+        </form>
+    </div>
+</form>
+{% endblock %}
