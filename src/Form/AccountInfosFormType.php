@@ -17,6 +17,7 @@ class AccountInfosFormType extends AbstractType
         $builder
             ->add('username', TextType::class, [
                 'label' => 'Pseudo',
+                'empty_data' => $options['username']
             ])
             ->add('email', EmailType::class)
             ->add('modify', SubmitType::class, [

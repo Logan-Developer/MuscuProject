@@ -19,7 +19,8 @@ class MyAccountController extends AbstractController
         // build the forms
         $user = new Users();
         $changeAccountInfosForm = $this->createForm(AccountInfosFormType::class, $user);
-        $changePasswordForm = $this->createForm(ChangePasswordType::class, $user);
+        $changePasswordForm = $this->createForm(ChangePasswordType::class, $user, [
+            'username' => $user->getUsername()]);
 
         return $this->render('my_account/index.html.twig', [
             'account_infos_form' => $changeAccountInfosForm->createView(),
