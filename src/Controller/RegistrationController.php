@@ -43,7 +43,6 @@ class RegistrationController extends AbstractController
                     $entityManager->persist($user);
                     $entityManager->flush();
 
-                    $error = false;
                     $msg = 'Inscription réussie, vous pouvez dès à présent vous connecter.';
 
                 } catch (Exception $exception) {

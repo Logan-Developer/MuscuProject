@@ -12,13 +12,31 @@
     <div class="main">
 
         <div class="card">
-                {{ form(account_infos_form) }}
+            {{ form(account_infos_form) }}
+            {% if msg_account != null %}
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">{{ msg_account }}</div>
+
+                {% else %}
+
+                    <div class="alert alert-success" role="alert">{{ msg_account }}</div>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
     <div class="main">
 
         <div class="card">
             {{ form(password_form) }}
+            {% if msg_password != null %}
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">{{ msg_password }}</div>
+
+                {% else %}
+
+                    <div class="alert alert-success" role="alert">{{ msg_password }}</div>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

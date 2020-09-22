@@ -17,9 +17,11 @@ class AccountInfosFormType extends AbstractType
         $builder
             ->add('username', TextType::class, [
                 'label' => 'Pseudo',
-                'empty_data' => $options['username']
+                'data' => $options['username']
             ])
-            ->add('email', EmailType::class)
+            ->add('email', EmailType::class, [
+                'data' => $options['email']
+            ])
             ->add('modify', SubmitType::class, [
                 'label' => 'Modifier'
             ])
@@ -30,6 +32,8 @@ class AccountInfosFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Users::class,
+            'username' => '',
+            'email' => ''
         ]);
     }
 }
