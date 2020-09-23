@@ -18,6 +18,14 @@ class RegistrationController extends AbstractController
     public function index(Request $request, UserPasswordEncoderInterface $encoder)
     {
 
+        // go to the home screen if the user is logged in
+        if ($this->getUser() != null) {
+
+            return $this->redirectToRoute('home');
+        }
+
+
+
         // build the form
         $user = new Users();
         $registrationForm = $this->createForm(RegistrationFormType::class, $user);

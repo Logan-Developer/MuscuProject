@@ -6,16 +6,18 @@ use App\Entity\Users;
 use App\Form\AccountInfosFormType;
 use App\Form\ChangePasswordType;
 use App\Repository\UsersRepository;
+use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class MyAccountController extends AbstractController
 {
     /**
      * @Route("/myaccount", name="my_account")
      */
-    public function index(Request $request, UsersRepository $repository)
+    public function index(Request $request, UsersRepository $repository, LoginFormAuthenticator $authenticator, UserPasswordEncoderInterface $encoder)
     {
 
         $error = false;
@@ -35,45 +37,51 @@ class MyAccountController extends AbstractController
         ]);
 
         // handle the submit
-        $changeAccountInfosForm->handleRequest($request);
+        if ($request->request->has('account_infos_form')) {
+            $changeAccountInfosForm->handleRequest($request);
 
-        if ($changeAccountInfosForm->isSubmitted()) {
+            if ($changeAccountInfosForm->isSubmitted()) {
 
-            if ($changeAccountInfosForm->isValid()) {
+                if ($changeAccountInfosForm->isValid()) {
 
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($user);
-                $entityManager->flush();
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($user);
+                    $entityManager->flush();
 
-                $msgChangeAccount = 'Les informations ont bien été mises à jour';
+                    $msgChangeAccount = 'Les informations ont bien été mises à jour';
 
-            } else {
+                } else {
 
-                $error = true;
-                $msgChangeAccount = 'Une erreur est survenue, veuillez réessayer plus tard.';
+                    $error = true;
+                    $msgChangeAccount = 'Une erreur est survenue, veuillez réessayer plus tard.';
+                }
             }
         }
 
 
+        $userFromForm = new Users(); // User with infos retrieved from the form
+        $changePasswordForm = $this->createForm(ChangePasswordType::class, $userFromForm);
 
+        if ($request->request->has('change_password')) {
+            $changePasswordForm->handleRequest($request);
 
-        $changePasswordForm = $this->createForm(ChangePasswordType::class, $user);
-        $changePasswordForm->handleRequest($request);
+            if ($changePasswordForm->isSubmitted()) {
 
-        if ($changePasswordForm->isSubmitted()) {
+                if ($changePasswordForm->isValid() && $authenticator->checkCredentials(['password'=>$changePasswordForm->get('actual_password')->getData()], $user)) {
 
-            if ($changePasswordForm->isValid() && $changePasswordForm->get('actual_password')->getData() == $this->getUser()->getPassword()) {
+                    // encode the new password and push the new password in the database
+                    $user->setPassword($encoder->encodePassword($user, $changePasswordForm->get('password')->getData()));
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($user);
+                    $entityManager->flush();
 
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($user);
-                $entityManager->flush();
+                    $msgChangePassword = 'Le mot de passe a bien été mis à jour';
 
-                $msgChangePassword = 'Le mot de passe a bien été mis à jour';
+                } else {
 
-            } else {
-
-                $error = true;
-                $msgChangePassword = 'Une erreur est survenue, veuillez réessayer plus tard.';
+                    $error = true;
+                    $msgChangePassword = 'Une erreur est survenue, veuillez vérifier les mots de passe, et réessayez plus tard.';
+                }
             }
         }
 
