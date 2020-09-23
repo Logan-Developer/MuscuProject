@@ -26,7 +26,7 @@ class Users implements UserInterface
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private $roles;
 
     /**
      * @var string The hashed password
@@ -48,6 +48,18 @@ class Users implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     private $lastname;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $newsletterSubscriber;
+
+    public function __construct()
+    {
+
+        $this->roles = ['ROLE_USER'];
+        $this->newsletterSubscriber = false;
+    }
 
     public function getId(): ?int
     {
@@ -154,6 +166,18 @@ class Users implements UserInterface
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getNewsletterSubscriber(): ?bool
+    {
+        return $this->newsletterSubscriber;
+    }
+
+    public function setNewsletterSubscriber(bool $newsletterSubscriber): self
+    {
+        $this->newsletterSubscriber = $newsletterSubscriber;
 
         return $this;
     }
