@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Users;
-use App\Form\AccountInfosFormType;
-use App\Form\ChangePasswordType;
-use App\Form\SubscribeNewsletterType;
+use App\Form\my_account\AccountInfosFormType;
+use App\Form\my_account\ChangePasswordType;
+use App\Form\my_account\SubscribeNewsletterType;
 use App\Repository\UsersRepository;
 use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -124,7 +124,8 @@ class MyAccountController extends AbstractController
                     $entityManager->persist($user);
                     $entityManager->flush();
 
-                    if ($newsletterSubscriber) {
+                    // actualise the form with the new newsletter subscription state
+                    if (!$newsletterSubscriber) {
 
                         $subscriptionButtonState = 'Se désabonner';
                         $subscriptionStateMsg = 'Abonné(e)';
