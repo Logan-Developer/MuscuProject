@@ -1,45 +1,58 @@
 {% macro menu(pageTitle) %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ path('home') }}">Salle de sport</a>
+            {% if app.user.roles[1] is defined %}
+                <a class="navbar-brand" href="{{ path('home') }}">Salle de sport<br>Rédaction</a>
+            {%  else %}
+                <a class="navbar-brand" href="{{ path('home') }}">Salle de sport</a>
+            {% endif %}
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {% if pageTitle == 'offers' %} active {% endif %}"  aria-current="page" href="#">Offres</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if pageTitle == 'contact' %} active {% endif %}" aria-current="page" href="{{ path('contact') }}">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if pageTitle == 'sessions' %} active {% endif %}" aria-current="page" href="#">Séances</a>
-                    </li>
 
-                    {% if app.user.id is not defined %}
+                    <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a class="nav-link {% if pageTitle == 'registration' %} active {% endif %}" aria-current="page" href="{{ path('register') }}">Inscription</a>
+                            <a class="nav-link {% if pageTitle == 'offers' %} active {% endif %}"  aria-current="page" href="#">Offres</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if pageTitle == 'login' %} active {% endif %}" aria-current="page" href="{{ path('login') }}">Connexion</a>
+                            <a class="nav-link {% if pageTitle == 'contact' %} active {% endif %}" aria-current="page" href="{{ path('contact') }}">Contact</a>
                         </li>
-                    {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if pageTitle == 'sessions' %} active {% endif %}" aria-current="page" href="#">Séances</a>
+                        </li>
+
+                        {% if app.user.id is not defined %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if pageTitle == 'registration' %} active {% endif %}" aria-current="page" href="{{ path('register') }}">Inscription</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if pageTitle == 'login' %} active {% endif %}" aria-current="page" href="{{ path('login') }}">Connexion</a>
+                            </li>
+                        {% endif %}
+
+                        {% if app.user.roles[1] is defined  %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if pageTitle == 'write' %} active {% endif %}" aria-current="page" href="{{ path('write') }}">Write</a>
+                            </li>
+                        {% endif %}
                     </ul>
 
-                    {% if app.user.id is defined %}
-                        <ul class="navbar-nav ml-auto">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                                    {{ app.user.username }}
-                                </a>
-                                <ul class="dropdown-menu float-right" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item {% if pageTitle == 'my_account' %} active {% endif %}" href="{{ path('my_account') }}">Mon compte</a></li>
-                                    <li><a class="dropdown-item" href="{{ path('logout') }}">Se déconnecter</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    {% endif %}
+
+
+                {% if app.user.id is defined %}
+                    <ul class="navbar-nav ml-auto" id="accountMenu">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                                {{ app.user.username }}
+                            </a>
+                            <ul class="dropdown-menu float-right" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item {% if pageTitle == 'my_account' %} active {% endif %}" href="{{ path('my_account') }}">Mon compte</a></li>
+                                <li><a class="dropdown-item" href="{{ path('logout') }}">Se déconnecter</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                {% endif %}
             </div>
         </div>
     </nav>

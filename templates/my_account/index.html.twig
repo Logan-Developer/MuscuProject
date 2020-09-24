@@ -23,8 +23,6 @@
                 {% endif %}
             {% endif %}
         </div>
-    </div>
-    <div class="main">
 
         <div class="card">
             {{ form(password_form) }}
@@ -35,6 +33,20 @@
                 {% else %}
 
                     <div class="alert alert-success" role="alert">{{ msg_password }}</div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <label><strong>Etat de l'abonnement: </strong>{{ subscription_state_msg }}</label>
+            {{ form(newsletter_form) }}
+            {% if msg_newsletter != null %}
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">{{ msg_newsletter }}</div>
+
+                {% else %}
+
+                    <div class="alert alert-success" role="alert">{{ msg_newsletter }}</div>
                 {% endif %}
             {% endif %}
         </div>

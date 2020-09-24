@@ -1,8 +1,5 @@
 security:
     encoders:
-        App\Entity\Utilisateurs:
-            algorithm: auto
-            cost: 12
         App\Entity\Users:
             algorithm: auto
 

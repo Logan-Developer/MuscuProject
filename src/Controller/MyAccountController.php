@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Form\AccountInfosFormType;
 use App\Form\ChangePasswordType;
+use App\Form\SubscribeNewsletterType;
 use App\Repository\UsersRepository;
 use App\Security\LoginFormAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,15 +21,18 @@ class MyAccountController extends AbstractController
     public function index(Request $request, UsersRepository $repository, LoginFormAuthenticator $authenticator, UserPasswordEncoderInterface $encoder)
     {
 
-        $error = false;
-        $msgChangeAccount = null;
-        $msgChangePassword = null;
-
-
-        // build the forms
         $username = $this->getUser()->getUsername();
         $user = $repository->findOneBy(['username' => $username]);
 
+
+        $error = false;
+        $msgChangeAccount = null;
+        $msgChangePassword = null;
+        $msgNewsletterSubscribe = null;
+        $newsletterSubscriber = $repository->findOneBy(['newsletterSubscriber'=>$user->getNewsletterSubscriber()])->getNewsletterSubscriber();
+
+
+        // build the forms
         // setting the actual username and email as default values
 
         $changeAccountInfosForm = $this->createForm(AccountInfosFormType::class, $user, [
@@ -59,6 +63,9 @@ class MyAccountController extends AbstractController
         }
 
 
+
+
+
         $userFromForm = new Users(); // User with infos retrieved from the form
         $changePasswordForm = $this->createForm(ChangePasswordType::class, $userFromForm);
 
@@ -85,12 +92,73 @@ class MyAccountController extends AbstractController
             }
         }
 
+
+
+
+        if ($newsletterSubscriber) {
+
+            $subscriptionButtonState = 'Se désabonner';
+            $subscriptionStateMsg = 'Abonné(e)';
+        }
+
+        else {
+
+            $subscriptionButtonState = 'S\'abonner';
+            $subscriptionStateMsg = 'Non abonné(e)';
+        }
+
+        $newslettersSubscriptionForm = $this->createForm(SubscribeNewsletterType::class, $user,
+            ['subscription_button_state'=> $subscriptionButtonState
+        ]);
+
+
+        if($request->request->has('subscribe_newsletter')) {
+            $newslettersSubscriptionForm->handleRequest($request);
+
+            if ($newslettersSubscriptionForm->isSubmitted()) {
+
+                if ($newslettersSubscriptionForm->isValid()) {
+
+                    $user->setNewsletterSubscriber(!$newsletterSubscriber);
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($user);
+                    $entityManager->flush();
+
+                    if ($newsletterSubscriber) {
+
+                        $subscriptionButtonState = 'Se désabonner';
+                        $subscriptionStateMsg = 'Abonné(e)';
+                    }
+
+                    else {
+
+                        $subscriptionButtonState = 'S\'abonner';
+                        $subscriptionStateMsg = 'Non abonné(e)';
+                    }
+
+                    $newslettersSubscriptionForm = $this->createForm(SubscribeNewsletterType::class, $user,
+                        ['subscription_button_state'=> $subscriptionButtonState
+                        ]);
+
+                    $msgNewsletterSubscribe = 'Le statut de votre abonnement à la newsletter a bien été modifié!';
+
+                } else {
+
+                    $error = true;
+                    $msgNewsletterSubscribe = 'Une erreur est survenue, veuillez réessayer plus tard.';
+                }
+            }
+        }
+
         return $this->render('my_account/index.html.twig', [
             'account_infos_form' => $changeAccountInfosForm->createView(),
             'password_form' => $changePasswordForm->createView(),
+            'newsletter_form' => $newslettersSubscriptionForm->createView(),
             'error' => $error,
             'msg_account' => $msgChangeAccount,
-            'msg_password' => $msgChangePassword
+            'msg_password' => $msgChangePassword,
+            'msg_newsletter' => $msgNewsletterSubscribe,
+            'subscription_state_msg' => $subscriptionStateMsg
         ]);
     }
 }
