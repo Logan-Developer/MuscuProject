@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rédaction- Salle de sport{% endblock %}
+{% block pageTitle %}Liste des articles de la rubrique {{ heading.titleHeading }}{% endblock %}
+
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('write') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+
+        {% if headingPages != null %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Titre</th>
+                    <th>Gérer</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for headingPage in headingPages %}
+                    <tr>
+                        <th>{{ headingPage.id }}</th>
+                        <td>{{ headingPage.titlePage }}</td>
+                        <td>
+                            <a class="btn bg-secondary text-white" href="{{ path('modify_heading_page', {'id':headingPage.id}) }}">Modifier</a><br><br>
+                            <a class="btn bg-danger text-white" href="{{ path('delete_heading_page', {'id':headingPage.id}) }}">Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <p>Aucun article enregistré.</p>
+        {% endif %}
+
+        <div class="card">
+            <h1 class="card-title">Ajout d'un article</h1>
+            {{ form(add_heading_page_form) }}
+
+            {% if msgAddHeadingPage != null %}
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">{{ msgAddHeadingPage }}</div>
+
+                {% else %}
+
+                    <div class="alert alert-success" role="alert">{{ msgAddHeadingPage }}</div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <br>
+        <div class="card">
+            <h1 class="card-title">Modification de la rubrique {{ heading.titleHeading }}</h1>
+            {{ form(modify_heading_form) }}
+
+            {% if msgModifyHeading != null %}
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">{{ msgModifyHeading }}</div>
+
+                {% else %}
+
+                    <div class="alert alert-success" role="alert">{{ msgModifyHeading }}</div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <br>
+        <a class="btn btn-secondary" href="{{ path('write') }}">Retourner à la liste des rubriques</a>
+    </div>
+{% endblock %}
