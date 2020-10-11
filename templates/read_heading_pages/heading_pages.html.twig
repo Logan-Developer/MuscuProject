@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles - Salle de sport{% endblock %}
+
+{% block pageTitle %}Liste des articles de la rubrique {{ heading.titleHeading }}{% endblock %}
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('read') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+
+        {% if heading.headingPages != null %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Consulter</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for headingPage in heading.headingPages %}
+                    <tr>
+                        <td>{{ headingPage.titlePage }}</td>
+                        <td>
+{#                            <a class="btn bg-primary text-white" href="{{ path('modify_user', {'id':user.id}) }}">Consulter</a>#}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <p>Aucun article enregistré.</p>
+        {% endif %}
+    </div>
+{% endblock %}
