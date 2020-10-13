@@ -49,7 +49,6 @@ class MyAccountController extends AbstractController
                 if ($changeAccountInfosForm->isValid()) {
 
                     $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->persist($user);
                     $entityManager->flush();
 
                     $msgChangeAccount = 'Les informations ont bien été mises à jour';
@@ -79,7 +78,6 @@ class MyAccountController extends AbstractController
                     // encode the new password and push the new password in the database
                     $user->setPassword($encoder->encodePassword($user, $changePasswordForm->get('password')->getData()));
                     $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->persist($user);
                     $entityManager->flush();
 
                     $msgChangePassword = 'Le mot de passe a bien été mis à jour';
@@ -121,7 +119,6 @@ class MyAccountController extends AbstractController
 
                     $user->setNewsletterSubscriber(!$newsletterSubscriber);
                     $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->persist($user);
                     $entityManager->flush();
 
                     // actualise the form with the new newsletter subscription state

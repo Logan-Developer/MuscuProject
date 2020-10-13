@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles - Salle de sport{% endblock %}
+
+{% block pageTitle %}{{ headingPage.titlePage }}{% endblock %}
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('read') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+        {{ headingPage.contentPage | raw }}
+        <br>
+        <a class="btn bg-secondary text-white" href="{{ path('see_heading_pages', {'id':headingPage.heading.id}) }}">Retourner à la liste des articles de la rubrique
+            {{ headingPage.heading.titleHeading }}</a>
+    </div>
+{% endblock %}

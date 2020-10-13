@@ -3,10 +3,10 @@
 namespace App\Form\write;
 
 use App\Entity\HeadingPages;
-use Doctrine\DBAL\Types\TextType;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,12 +19,12 @@ class AddModifyHeadingPagesType extends AbstractType
                 'label' => 'Titre de l\'article',
                 'data' => $options['titleHeadingPage']
             ])
-            ->add('contentPage', TextareaType::class, [
+            ->add('contentPage', CKEditorType::class, [
                 'label' => "Contenu",
                 'data' => $options['contentHeadingPage']
             ])
-            ->add('idHeading', HiddenType::class, [
-                'data' => $options['idHeading']
+            ->add('submit', SubmitType::class, [
+                'label' => 'Valider'
             ])
         ;
     }
@@ -35,7 +35,6 @@ class AddModifyHeadingPagesType extends AbstractType
             'data_class' => HeadingPages::class,
             'titleHeadingPage'=> '',
             'contentHeadingPage'=> '',
-            'idHeading' => ''
         ]);
     }
 }

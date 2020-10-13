@@ -54,11 +54,17 @@ class Users implements UserInterface
      */
     private $newsletterSubscriber;
 
+   /**
+     * @ORM\Column(type="boolean")
+     */
+    private $changePassword;
+
     public function __construct()
     {
 
         $this->roles = ['ROLE_USER'];
         $this->newsletterSubscriber = false;
+        $this->changePassword = false;
     }
 
     public function getId(): ?int
@@ -176,6 +182,18 @@ class Users implements UserInterface
     public function setNewsletterSubscriber(bool $newsletterSubscriber): self
     {
         $this->newsletterSubscriber = $newsletterSubscriber;
+
+        return $this;
+    }
+
+    public function getChangePassword(): ?bool
+    {
+        return $this->changePassword;
+    }
+
+    public function setChangePassword(bool $changePassword): self
+    {
+        $this->changePassword = $changePassword;
 
         return $this;
     }

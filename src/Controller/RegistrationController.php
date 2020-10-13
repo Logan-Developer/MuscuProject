@@ -15,7 +15,7 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/register", name="register")
      */
-    public function index(Request $request, UserPasswordEncoderInterface $encoder)
+    public function index(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
 
         // go to the home screen if the user is logged in
@@ -41,7 +41,7 @@ class RegistrationController extends AbstractController
             if ($registrationForm->isValid()) {
 
                 // encode the password
-                $password = $encoder->encodePassword($user, $user->getPassword());
+                $password = $passwordEncoder->encodePassword($user, $user->getPassword());
                 $user->setPassword($password);
 
                 // save the user in the database

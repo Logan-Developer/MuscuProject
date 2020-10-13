@@ -11,32 +11,57 @@
 {% block body %}
     <div class="main">
 
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Id</th>
-                <th>Pseudo</th>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Email</th>
-                <th>Gérer</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for user in users %}
+        {% if users != null %}
+            <table class="table">
+                <thead>
                 <tr>
-                    <th>{{ user.id }}</th>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.firstname }}</td>
-                    <td>{{ user.lastname }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>
-                        <a class="btn bg-secondary text-white" href="#">Modifier</a><br><br>
-                        <a class="btn bg-secondary text-white" href="#">Supprimer</a>
-                    </td>
+                    <th>Id</th>
+                    <th>Pseudo</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Gérer</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <th>{{ user.id }}</th>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.lastname }}</td>
+                        <td>{{ user.firstname }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <a class="btn bg-secondary text-white" href="{{ path('modify_user', {'id':user.id}) }}">Modifier</a><br><br>
+
+                            {% if not user.changePassword %}
+                                <a class="btn bg-secondary text-white" href="{{ path('reset_password', {'id':user.id}) }}">Renouveler le mot de passe</a><br><br>
+                            {% endif %}
+
+                            <a class="btn bg-danger text-white" href="{{ path('delete_user', {'id':user.id}) }}">Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <p>Aucun utilisateur enregistré.</p>
+        {% endif %}
+
+        <div class="card">
+            <h1 class="card-title">Ajouter un utilisateur</h1>
+            {{ form(add_user_form) }}
+
+            {% if msg != null %}
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">{{ msg }}</div>
+
+                {% else %}
+
+                    <div class="alert alert-success" role="alert">{{ msg }}</div>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

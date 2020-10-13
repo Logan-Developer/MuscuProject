@@ -15,54 +15,54 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
 
-                    <ul class="navbar-nav mr-auto">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if pageTitle == 'offers' %} active {% endif %}"  aria-current="page" href="#">Offres</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if pageTitle == 'contact' %} active {% endif %}" aria-current="page" href="{{ path('contact') }}">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if pageTitle == 'sessions' %} active {% endif %}" aria-current="page" href="#">Séances</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if pageTitle == 'read' %} active {% endif %}" aria-current="page" href="{{ path('see_headings') }}">Articles</a>
+                    </li>
+
+                    {% if app.user and 'ROLE_ADMIN' in app.user.roles  %}
                         <li class="nav-item">
-                            <a class="nav-link {% if pageTitle == 'offers' %} active {% endif %}"  aria-current="page" href="#">Offres</a>
+                            <a class="nav-link {% if pageTitle == 'manage_users' %} active {% endif %}" aria-current="page" href="{{ path('manage_users') }}">Gérer les utilisateurs</a>
+                        </li>
+                    {% endif %}
+
+                    {% if app.user and ('ROLE_REDACTOR' or 'ROLE_ADMIN') in app.user.roles  %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if pageTitle == 'write' %} active {% endif %}" aria-current="page" href="{{ path('write') }}">Rédiger</a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav ml-auto" id="accountMenu">
+                    {% if not app.user %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if pageTitle == 'registration' %} active {% endif %}" aria-current="page" href="{{ path('register') }}">Inscription</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if pageTitle == 'contact' %} active {% endif %}" aria-current="page" href="{{ path('contact') }}">Contact</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if pageTitle == 'sessions' %} active {% endif %}" aria-current="page" href="#">Séances</a>
+                            <a class="nav-link {% if pageTitle == 'login' %} active {% endif %}" aria-current="page" href="{{ path('login') }}">Connexion</a>
                         </li>
 
-                        {% if not app.user %}
-                            <li class="nav-item">
-                                <a class="nav-link {% if pageTitle == 'registration' %} active {% endif %}" aria-current="page" href="{{ path('register') }}">Inscription</a>
+                        {% else %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                                    {{ app.user.username }}
+                                </a>
+                                <ul class="dropdown-menu float-right" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item {% if pageTitle == 'my_account' %} active {% endif %}" href="{{ path('my_account') }}">Mon compte</a></li>
+                                    <li><a class="dropdown-item" href="{{ path('logout') }}">Se déconnecter</a></li>
+                                </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link {% if pageTitle == 'login' %} active {% endif %}" aria-current="page" href="{{ path('login') }}">Connexion</a>
-                            </li>
-                        {% endif %}
-
-                        {% if app.user and 'ROLE_ADMIN' in app.user.roles  %}
-                            <li class="nav-item">
-                                <a class="nav-link {% if pageTitle == 'manage_users' %} active {% endif %}" aria-current="page" href="{{ path('manage_users') }}">Gérer les utilisateurs</a>
-                            </li>
-                        {% endif %}
-
-                        {% if app.user and 'ROLE_REDACTOR' in app.user.roles  %}
-                            <li class="nav-item">
-                                <a class="nav-link {% if pageTitle == 'write' %} active {% endif %}" aria-current="page" href="{{ path('write') }}">Rédiger</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-
-
-
-                {% if app.user %}
-                    <ul class="navbar-nav ml-auto" id="accountMenu">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                                {{ app.user.username }}
-                            </a>
-                            <ul class="dropdown-menu float-right" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item {% if pageTitle == 'my_account' %} active {% endif %}" href="{{ path('my_account') }}">Mon compte</a></li>
-                                <li><a class="dropdown-item" href="{{ path('logout') }}">Se déconnecter</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                {% endif %}
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>

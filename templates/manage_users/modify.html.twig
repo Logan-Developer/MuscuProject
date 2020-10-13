@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification d'un utilisateur - Salle de sport{% endblock %}
+
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('manage_users') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+
+        <div class="card">
+            <h1 class="card-title">Modification de l'utilisateur {{ user.username }}</h1>
+            {{ form(modify_user_form) }}
+
+            {% if msg != null %}
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">{{ msg }}</div>
+
+                {% else %}
+
+                    <div class="alert alert-success" role="alert">{{ msg }}</div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <br>
+        <a class="btn btn-secondary" href="{{ path('manage_users') }}">Retourner à la liste des utilisateurs</a>
+    </div>
+{% endblock %}

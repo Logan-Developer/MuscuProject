@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\write;
 
 use App\Entity\Headings;
 use Symfony\Component\Form\AbstractType;

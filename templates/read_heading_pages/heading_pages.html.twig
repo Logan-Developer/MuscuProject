@@ -11,7 +11,7 @@
 {% block body %}
     <div class="main">
 
-        {% if heading.headingPages != null %}
+        {% if heading.headingPages.count > 0 %}
             <table class="table">
                 <thead>
                 <tr>
@@ -24,7 +24,7 @@
                     <tr>
                         <td>{{ headingPage.titlePage }}</td>
                         <td>
-{#                            <a class="btn bg-primary text-white" href="{{ path('modify_user', {'id':user.id}) }}">Consulter</a>#}
+                            <a class="btn bg-primary text-white" href="{{ path('read_heading_page', {'id':headingPage.id}) }}">Consulter</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -34,5 +34,7 @@
         {% else %}
             <p>Aucun article enregistré.</p>
         {% endif %}
+        <br>
+        <a class="btn bg-secondary text-white" href="{{ path('see_headings') }}">Retourner à la liste des rubriques</a>
     </div>
 {% endblock %}
