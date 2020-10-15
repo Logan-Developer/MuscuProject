@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class MyAccountController extends AbstractController
 {
     /**
-     * @Route("/myaccount", name="my_account")
+     * @Route("/myaccount", name="my_account", methods={"GET", "PUT"})
      */
     public function index(Request $request, UsersRepository $repository, LoginFormAuthenticator $authenticator, UserPasswordEncoderInterface $encoder)
     {
@@ -24,11 +24,6 @@ class MyAccountController extends AbstractController
         $username = $this->getUser()->getUsername();
         $user = $repository->findOneBy(['username' => $username]);
 
-
-        $error = false;
-        $msgChangeAccount = null;
-        $msgChangePassword = null;
-        $msgNewsletterSubscribe = null;
         $newsletterSubscriber = $repository->findOneBy(['newsletterSubscriber'=>$user->getNewsletterSubscriber()])->getNewsletterSubscriber();
 
 
@@ -37,7 +32,8 @@ class MyAccountController extends AbstractController
 
         $changeAccountInfosForm = $this->createForm(AccountInfosFormType::class, $user, [
             'username' => $username,
-            'email' => $user->getEmail()
+            'email' => $user->getEmail(),
+            'method' => 'PUT'
         ]);
 
         // handle the submit
@@ -51,12 +47,11 @@ class MyAccountController extends AbstractController
                     $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->flush();
 
-                    $msgChangeAccount = 'Les informations ont bien été mises à jour';
+                    $this->addFlash('success', 'Les informations ont bien été mises à jour!');
 
                 } else {
 
-                    $error = true;
-                    $msgChangeAccount = 'Une erreur est survenue, veuillez réessayer plus tard.';
+                    $this->addFlash('danger', 'Une erreur est survenue, veuillez réessayer plus tard.');
                 }
             }
         }
@@ -80,12 +75,11 @@ class MyAccountController extends AbstractController
                     $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->flush();
 
-                    $msgChangePassword = 'Le mot de passe a bien été mis à jour';
+                    $this->addFlash('success', 'Le mot de passe a bien été mis à jour!');
 
                 } else {
 
-                    $error = true;
-                    $msgChangePassword = 'Une erreur est survenue, veuillez vérifier les mots de passe, et réessayez plus tard.';
+                    $this->addFlash('danger', 'Une erreur est survenue, veuillez vérifier les mots de passe, et réessayez plus tard.');
                 }
             }
         }
@@ -138,12 +132,11 @@ class MyAccountController extends AbstractController
                         ['subscription_button_state'=> $subscriptionButtonState
                         ]);
 
-                    $msgNewsletterSubscribe = 'Le statut de votre abonnement à la newsletter a bien été modifié!';
+                    $this->addFlash('success', 'Le statut de votre abonnement à la newsletter a bien été modifié!');
 
                 } else {
 
-                    $error = true;
-                    $msgNewsletterSubscribe = 'Une erreur est survenue, veuillez réessayer plus tard.';
+                    $this->addFlash('danger', 'Une erreur est survenue, veuillez réessayer plus tard.');
                 }
             }
         }
@@ -152,10 +145,6 @@ class MyAccountController extends AbstractController
             'account_infos_form' => $changeAccountInfosForm->createView(),
             'password_form' => $changePasswordForm->createView(),
             'newsletter_form' => $newslettersSubscriptionForm->createView(),
-            'error' => $error,
-            'msg_account' => $msgChangeAccount,
-            'msg_password' => $msgChangePassword,
-            'msg_newsletter' => $msgNewsletterSubscribe,
             'subscription_state_msg' => $subscriptionStateMsg
         ]);
     }

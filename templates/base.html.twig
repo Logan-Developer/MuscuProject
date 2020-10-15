@@ -12,6 +12,12 @@
             {% import 'macro/menu.html.twig' as macroMenu %}
             {{ macroMenu.menu('home') }}
         {% endblock %}
+        <!-- Affichage des messages flash -->
+        {% for label,messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
 
         <h1 class="pageTitle">{% block pageTitle %}{% endblock %}</h1>
         {% block body %}{% endblock %}

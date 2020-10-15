@@ -224,14 +224,20 @@ class WriteController extends AbstractController
     public function deleteHeading(HeadingsRepository $repository, $id)
     {
 
-        // TODO delete the heading only if it is empty
         $heading = $repository->findOneBy(['id' => $id]);
 
         if ($heading != null) {
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($heading);
-            $entityManager->flush();
+            try {
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->remove($heading);
+                $entityManager->flush();
+
+            } catch (Exception $e) {
+
+                $this->addFlash('danger', 'Erreur, impossible de supprimer une rubrique contenant des articles!');
+            }
 
         }
 

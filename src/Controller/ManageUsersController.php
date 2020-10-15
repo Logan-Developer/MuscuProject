@@ -17,16 +17,13 @@ class ManageUsersController extends AbstractController
     // TODO filters for users and pagination
 
     /**
-     * @Route("/manageusers", name="manage_users")
+     * @Route("/manageusers", name="manage_users", methods={"GET", "POST"})
      */
     public function index(UsersRepository $repository, UserPasswordEncoderInterface $passwordEncoder, Request $request)
     {
 
         $user = new Users();
         $addUserForm = $this->createForm(AddModifyUserType::class, $user);
-
-        $error = false;
-        $msg = null;
 
         $addUserForm->handleRequest($request);
 
@@ -46,18 +43,16 @@ class ManageUsersController extends AbstractController
                     $entityManager->persist($user);
                     $entityManager->flush();
 
-                    $msg = 'Inscription réussie, l\'utilisateur peut désormais se connecter!';
+                    $this->addFlash('success', 'Inscription réussie, l\'utilisateur peut désormais se connecter!');
 
                 } catch (Exception $exception) {
 
-                    $error = true;
-                    $msg = 'Erreur, l\'adresse mail ou le pseudo entré(e) est déjà utilisé(e) par un autre utilisateur.';
+                    $this->addFlash('danger', 'Erreur, l\'adresse mail ou le pseudo entré(e) est déjà utilisé(e) par un autre utilisateur.');
                 }
 
             } else {
 
-                $error = true;
-                $msg = 'Une erreur est survenue, merci de réessayer plus tard.';
+               $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
             }
         }
 
@@ -65,9 +60,7 @@ class ManageUsersController extends AbstractController
 
         return $this->render('manage_users/index.html.twig', [
             'users' => $users,
-            'add_user_form' => $addUserForm->createView(),
-            'error' => $error,
-            'msg' => $msg
+            'add_user_form' => $addUserForm->createView()
         ]);
     }
 
@@ -76,11 +69,13 @@ class ManageUsersController extends AbstractController
 
 
     /**
-     * @Route("/manageusers/delete/{id}", name="delete_user")
+     * @Route("/manageusers/delete/{id}", name="delete_user", methods={"DELETE"})
      */
     public function deleteUser(UsersRepository $repository, $id)
     {
 
+        //TODO A redactor cannot be deleted if he has articles
+        //TODO change to use delete/put methods only
         $admins = $repository->findByRole('ROLE_ADMIN');
 
         $user = $repository->findOneBy(['id' => $id]);
@@ -95,6 +90,9 @@ class ManageUsersController extends AbstractController
                 $entityManager->flush();
 
             }
+        } else {
+
+            $this->addFlash('danger', 'Erreur, il doit y avoir au moins un administrateur enregistré!');
         }
 
         return $this->redirectToRoute('manage_users');
@@ -105,7 +103,7 @@ class ManageUsersController extends AbstractController
 
 
     /**
-     * @Route("/manageusers/modify/{id}", name="modify_user")
+     * @Route("/manageusers/modify/{id}", name="modify_user", methods={"GET", "PUT"})
      */
     public function modifyUser(UsersRepository $repository, Request $request, $id)
     {
@@ -114,16 +112,14 @@ class ManageUsersController extends AbstractController
 
         $user = $repository->findOneBy(['id'=>$id]);
 
-        $error = false;
-        $msg = null;
-
         $modifyUserForm = $this->createForm(AddModifyUserType::class, $user, [
             'addingUser' => false,
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
             'username' => $user->getUsername(),
             'email' => $user->getEmail(),
-            'roles' => $user->getRoles()
+            'roles' => $user->getRoles(),
+            'method' => 'PUT'
         ]);
 
         $modifyUserForm->handleRequest($request);
@@ -143,31 +139,26 @@ class ManageUsersController extends AbstractController
                         $entityManager->persist($user);
                         $entityManager->flush();
 
-                        $msg = 'Informations modifiées avec succès!';
+                        $this->addFlash('success', 'Informations modifiées avec succès!');
 
                     } catch (Exception $exception) {
 
-                        $error = true;
-                        $msg = 'Erreur, l\'adresse mail ou le pseudo entré(e) est déjà utilisé(e) par un autre utilisateur.';
+                        $this->addFlash('danger', 'Erreur, l\'adresse mail ou le pseudo entré(e) est déjà utilisé(e) par un autre utilisateur.');
                     }
 
                 } else {
 
-                    $error = true;
-                    $msg = 'Une erreur est survenue, merci de réessayer plus tard.';
+                    $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
                 }
             } else {
 
-                $error = true;
-                $msg = 'Erreur, il doit y avoir au moins un administrateur enregistré!';
+                $this->addFlash('danger', 'Erreur, il doit y avoir au moins un administrateur enregistré!');
             }
         }
 
         return $this->render('manage_users/modify.html.twig', [
             'user' => $user,
-            'modify_user_form' => $modifyUserForm->createView(),
-            'error' => $error,
-            'msg' => $msg
+            'modify_user_form' => $modifyUserForm->createView()
         ]);
     }
 
@@ -176,11 +167,12 @@ class ManageUsersController extends AbstractController
 
 
     /**
-     * @Route("/manageusers/resetPassword/{id}", name="reset_password")
+     * @Route("/manageusers/resetPassword/{id}", name="reset_password", methods={"GET", "PUT"})
      */
     public function resetPassword(UsersRepository $repository, $id)
     {
 
+        //TODO change to use delete/put methods only
         $user = $repository->findOneBy(['id'=>$id]);
 
         if ($user != null) {
