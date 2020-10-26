@@ -8,6 +8,9 @@ use App\Form\write\AddModifyHeadingPagesType;
 use App\Form\write\AddModifyHeadingType;
 use App\Repository\HeadingPagesRepository;
 use App\Repository\HeadingsRepository;
+use App\Repository\UsersRepository;
+use DateTime;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,15 +19,15 @@ use Exception;
 class WriteController extends AbstractController
 {
     /**
-     * @Route("/write", name="write")
+     * @Route("/write", name="write", methods={"GET", "POST"})
      */
     public function index(HeadingsRepository $repository, Request $request)
     {
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
+
         $heading = new Headings();
         $addHeadingForm = $this->createForm(AddModifyHeadingType::class, $heading);
-
-        $error = false;
-        $msg = null;
 
         $addHeadingForm->handleRequest($request);
         if ($addHeadingForm->isSubmitted()) {
@@ -36,18 +39,17 @@ class WriteController extends AbstractController
                     $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->persist($heading);
                     $entityManager->flush();
-                    $msg = 'Rubrique ajoutée avec succès!';
+
+                    $this->addFlash('success', 'Rubrique ajoutée avec succès!');
 
                 } catch (Exception $exception) {
 
-                    $error = true;
-                    $msg = 'Erreur, une rubrique de même titre est déjà existante!';
+                    $this->addFlash('danger', 'Erreur, une rubrique de même titre est déjà existante!');
                 }
 
             } else {
 
-                $error = true;
-                $msg = 'Erreur, veuillez réessayer plus tard.';
+                $this->addFlash('danger', 'Erreur, veuillez réessayer plus tard.');
             }
         }
 
@@ -55,8 +57,6 @@ class WriteController extends AbstractController
 
         return $this->render('write/index.html.twig',[
             'headings' => $headings,
-            'error' => $error,
-            'msg' => $msg,
             'add_heading_form' => $addHeadingForm->createView()
         ]);
     }
@@ -64,23 +64,23 @@ class WriteController extends AbstractController
 
 
     /**
-     * @Route("/write/modify/heading/{id}", name="modify_heading")
+     * @Route("/write/modify/heading/{id}", name="modify_heading", methods={"GET", "PUT", "POST"})
      */
-    public function modifyHeading(HeadingsRepository $headingsRepository, HeadingPagesRepository $headingPagesRepository, $id, Request $request)
+    public function modifyHeading(HeadingsRepository $headingsRepository, HeadingPagesRepository $headingPagesRepository, UsersRepository $usersRepository, $id, Request $request)
     {
+
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
         $heading = $headingsRepository->findOneBy(['id'=>$id]);
         $headingPages = $headingPagesRepository->findAll();
         $headingPage = new HeadingPages();
 
-        $error = false;
-        $msgAddHeadingPage = null;
-        $msgModifyHeading = null;
-
         $addHeadingPageForm = $this->createForm(AddModifyHeadingPagesType::class, $headingPage);
 
         $modifyHeadingForm = $this->createForm(AddModifyHeadingType::class, $heading, [
-            'titleHeading' => $heading->getTitleHeading()
+            'titleHeading' => $heading->getTitleHeading(),
+            'method' => 'PUT'
         ]);
 
         if ($request->request->has("add_modify_heading_pages")) {
@@ -96,22 +96,25 @@ class WriteController extends AbstractController
                     // save the heading page in the database
 
                     try {
+
+                        $redactor = $usersRepository->findOneBy(['username' => $this->getUser()->getUsername()]);
+
+                        $headingPage->setRedactor($redactor);
+                        $headingPage->setModificationDate(new DateTime());
                         $entityManager = $this->getDoctrine()->getManager();
                         $entityManager->persist($headingPage);
                         $entityManager->flush();
 
-                        $msgAddHeadingPage = 'Article ajouté avec succès!';
+                        $this->addFlash('success', 'Article ajouté avec succès!');
 
                     } catch (Exception $exception) {
 
-                        $error = true;
-                        $msgAddHeadingPage = 'Erreur, un article de même titre est déjà existant!';
+                        $this->addFlash('danger', 'Erreur, un article de même titre est déjà existant!');
                     }
 
                 } else {
 
-                    $error = true;
-                    $msgAddHeadingPage = 'Une erreur est survenue, merci de réessayer plus tard.';
+                    $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
                 }
             }
 
@@ -133,18 +136,16 @@ class WriteController extends AbstractController
                         $entityManager->persist($heading);
                         $entityManager->flush();
 
-                        $msgModifyHeading = 'Informations modifiées avec succès!';
+                        $this->addFlash('success', 'Informations modifiées avec succès!');
 
                     } catch (Exception $exception) {
 
-                        $error = true;
-                        $msgModifyHeading = 'Erreur, une rubrique de même titre est déjà existante!';
+                        $this->addFlash('danger', 'Erreur, une rubrique de même titre est déjà existante!');
                     }
 
                 } else {
 
-                    $error = true;
-                    $msgModifyHeading = 'Une erreur est survenue, merci de réessayer plus tard.';
+                    $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
                 }
             }
         }
@@ -154,29 +155,27 @@ class WriteController extends AbstractController
             'heading' => $heading,
             'headingPages' => $headingPages,
             'modify_heading_form' => $modifyHeadingForm->createView(),
-            'add_heading_page_form' => $addHeadingPageForm->createView(),
-            'error' => $error,
-            'msgAddHeadingPage' => $msgAddHeadingPage,
-            'msgModifyHeading' => $msgModifyHeading
+            'add_heading_page_form' => $addHeadingPageForm->createView()
         ]);
     }
 
 
 
     /**
-     * @Route("/write/modify/page/{id}", name="modify_heading_page")
+     * @Route("/write/modify/page/{id}", name="modify_heading_page", methods={"GET", "PUT"})
      */
     public function modifyHeadingPage(HeadingPagesRepository $repository, $id, Request $request)
     {
 
-        $headingPage = $repository->findOneBy(['id' => $id]);
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
-        $error = false;
-        $msg = null;
+        $headingPage = $repository->findOneBy(['id' => $id]);
 
         $modifyHeadingPageForm = $this->createForm(AddModifyHeadingPagesType::class, $headingPage, [
             'titleHeadingPage'=> $headingPage->getTitlePage(),
             'contentHeadingPage'=> $headingPage->getContentPage(),
+            'method' => 'PUT'
         ]);
 
         $modifyHeadingPageForm->handleRequest($request);
@@ -188,41 +187,42 @@ class WriteController extends AbstractController
                 // save the modified page in the database
 
                 try {
+
+                    $headingPage->setModificationDate(new DateTime());
                     $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->persist($headingPage);
                     $entityManager->flush();
 
-                    $msg = 'Article modifié avec succès!';
+                    $this->addFlash('success', 'Article modifié avec succès!');
 
                 } catch (Exception $exception) {
 
-                    $error = true;
-                    $msg = 'Erreur, un article de même titre est déjà existant!';
+                    $this->addFlash('danger', 'Erreur, un article de même titre est déjà existant!');
                 }
 
             } else {
 
-                $error = true;
-                $msg = 'Une erreur est survenue, merci de réessayer plus tard.';
+                $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
             }
         }
 
 
         return $this->render('write/modify_heading_page.html.twig', [
             'headingPage' => $headingPage,
-            'modify_heading_page_form' => $modifyHeadingPageForm->createView(),
-            'error' => $error,
-            'msg' => $msg
+            'modify_heading_page_form' => $modifyHeadingPageForm->createView()
         ]);
     }
 
 
 
     /**
-    * @Route("/write/delete/heading/{id}", name="delete_heading")
+    * @Route("/write/delete/heading/{id}", name="delete_heading", methods={"DELETE"})
     */
     public function deleteHeading(HeadingsRepository $repository, $id)
     {
+
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
         $heading = $repository->findOneBy(['id' => $id]);
 
@@ -234,9 +234,14 @@ class WriteController extends AbstractController
                 $entityManager->remove($heading);
                 $entityManager->flush();
 
-            } catch (Exception $e) {
+                $this->addFlash('success', 'La rubrique a été supprimée avec succès!');
+            } catch (ForeignKeyConstraintViolationException $e) {
 
                 $this->addFlash('danger', 'Erreur, impossible de supprimer une rubrique contenant des articles!');
+
+            } catch (Exception $e) {
+
+                $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
             }
 
         }
@@ -247,10 +252,13 @@ class WriteController extends AbstractController
 
 
     /**
-     * @Route("/write/delete/page/{id}", name="delete_heading_page")
+     * @Route("/write/delete/page/{id}", name="delete_heading_page", methods={"DELETE"})
      */
     public function deleteHeadingPage(HeadingPagesRepository $repository, $id)
     {
+
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
         // TODO delete the page only if the redactor is the owner or if it's an admin
         $headingPage = $repository->findOneBy(['id' => $id]);
@@ -269,5 +277,9 @@ class WriteController extends AbstractController
         }
 
         return $this->redirectToRoute('modify_heading', ['id' => $heading->getId()]);
+    }
+
+    private function isPermissionValidated() {
+           return !($this->getUser() === null or in_array('ROLE_USER', $this->getUser()->getRoles()));
     }
 }

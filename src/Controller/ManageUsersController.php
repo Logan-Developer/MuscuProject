@@ -5,7 +5,10 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Form\AddModifyUserType;
 use App\Repository\UsersRepository;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,13 +17,17 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class ManageUsersController extends AbstractController
 {
 
-    // TODO filters for users and pagination
+    // TODO filters for users
 
     /**
-     * @Route("/manageusers", name="manage_users", methods={"GET", "POST"})
+     * @Route("/manageusers/{page}", name="manage_users", methods={"GET", "POST"})
      */
-    public function index(UsersRepository $repository, UserPasswordEncoderInterface $passwordEncoder, Request $request)
+    public function index(UsersRepository $repository, UserPasswordEncoderInterface $passwordEncoder, Request $request,
+                          PaginatorInterface $paginator, $page, EntityManagerInterface $entityManager)
     {
+
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
         $user = new Users();
         $addUserForm = $this->createForm(AddModifyUserType::class, $user);
@@ -39,7 +46,6 @@ class ManageUsersController extends AbstractController
                 // save the user in the database
 
                 try {
-                    $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->persist($user);
                     $entityManager->flush();
 
@@ -56,7 +62,7 @@ class ManageUsersController extends AbstractController
             }
         }
 
-        $users = $repository->findAll();
+        $users = $paginator->paginate($repository->findAll(), $page, 2);
 
         return $this->render('manage_users/index.html.twig', [
             'users' => $users,
@@ -71,11 +77,11 @@ class ManageUsersController extends AbstractController
     /**
      * @Route("/manageusers/delete/{id}", name="delete_user", methods={"DELETE"})
      */
-    public function deleteUser(UsersRepository $repository, $id)
+    public function deleteUser(UsersRepository $repository, $id, EntityManagerInterface $entityManager)
     {
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
-        //TODO A redactor cannot be deleted if he has articles
-        //TODO change to use delete/put methods only
         $admins = $repository->findByRole('ROLE_ADMIN');
 
         $user = $repository->findOneBy(['id' => $id]);
@@ -85,9 +91,20 @@ class ManageUsersController extends AbstractController
 
             if ($user != null) {
 
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->remove($user);
-                $entityManager->flush();
+                try {
+
+                    $entityManager->remove($user);
+                    $entityManager->flush();
+
+                    $this->addFlash('success', 'Utilisateur supprimé avec succès!');
+                } catch (ForeignKeyConstraintViolationException $e) {
+
+                    $this->addFlash('danger', 'Erreur, impossible de supprimer un rédacteur ou un administrateur ayant rédigé des articles!');
+
+                } catch (Exception $e) {
+
+                    $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
+                }
 
             }
         } else {
@@ -95,7 +112,7 @@ class ManageUsersController extends AbstractController
             $this->addFlash('danger', 'Erreur, il doit y avoir au moins un administrateur enregistré!');
         }
 
-        return $this->redirectToRoute('manage_users');
+        return $this->redirectToRoute('manage_users', ['page' => 1]);
     }
 
 
@@ -105,8 +122,10 @@ class ManageUsersController extends AbstractController
     /**
      * @Route("/manageusers/modify/{id}", name="modify_user", methods={"GET", "PUT"})
      */
-    public function modifyUser(UsersRepository $repository, Request $request, $id)
+    public function modifyUser(UsersRepository $repository, Request $request, $id, EntityManagerInterface $entityManager)
     {
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
         $admins = $repository->findByRole('ROLE_ADMIN');
 
@@ -129,13 +148,12 @@ class ManageUsersController extends AbstractController
         if ($modifyUserForm->isSubmitted()) {
 
             // there must be at least one admin registered
-            if (in_array('ROLE_ADMIN', $user->getRoles()) or count($admins) > 1) {
+            if (!in_array('ROLE_ADMIN', $user->getRoles()) or count($admins) > 1) {
                 if ($modifyUserForm->isValid()) {
 
                     // save the user in the database
 
                     try {
-                        $entityManager = $this->getDoctrine()->getManager();
                         $entityManager->persist($user);
                         $entityManager->flush();
 
@@ -167,22 +185,27 @@ class ManageUsersController extends AbstractController
 
 
     /**
-     * @Route("/manageusers/resetPassword/{id}", name="reset_password", methods={"GET", "PUT"})
+     * @Route("/manageusers/resetPassword/{id}", name="reset_password", methods={"PUT"})
      */
-    public function resetPassword(UsersRepository $repository, $id)
+    public function resetPassword(UsersRepository $repository, $id, EntityManagerInterface $entityManager)
     {
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
-        //TODO change to use delete/put methods only
         $user = $repository->findOneBy(['id'=>$id]);
 
         if ($user != null) {
 
-            $entityManager = $this->getDoctrine()->getManager();
             $user->setChangePassword(true);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Le mot de passe de l\'utilisateur a bien été réinitialisé!');
         }
 
-        return $this->redirectToRoute('manage_users');
+        return $this->redirectToRoute('manage_users', ['page' => 1]);
+    }
+
+    private function isPermissionValidated() {
+        return $this->getUser() !== null and in_array('ROLE_ADMIN', $this->getUser()->getRoles());
     }
 }

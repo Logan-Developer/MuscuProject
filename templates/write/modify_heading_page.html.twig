@@ -13,16 +13,6 @@
 
         <div class="card">
             {{ form(modify_heading_page_form) }}
-
-            {% if msg != null %}
-                {% if error %}
-                    <div class="alert alert-danger" role="alert">{{ msg }}</div>
-
-                {% else %}
-
-                    <div class="alert alert-success" role="alert">{{ msg }}</div>
-                {% endif %}
-            {% endif %}
         </div>
         <br>
         <a class="btn btn-secondary" href="{{ path('modify_heading', {'id':headingPage.heading.id}) }}">Retourner à la modification de la rubrique {{ headingPage.heading.titleHeading }}</a>

@@ -41,31 +41,11 @@
         <div class="card">
             <h1 class="card-title">Ajout d'un article</h1>
             {{ form(add_heading_page_form) }}
-
-            {% if msgAddHeadingPage != null %}
-                {% if error %}
-                    <div class="alert alert-danger" role="alert">{{ msgAddHeadingPage }}</div>
-
-                {% else %}
-
-                    <div class="alert alert-success" role="alert">{{ msgAddHeadingPage }}</div>
-                {% endif %}
-            {% endif %}
         </div>
         <br>
         <div class="card">
             <h1 class="card-title">Modification de la rubrique {{ heading.titleHeading }}</h1>
             {{ form(modify_heading_form) }}
-
-            {% if msgModifyHeading != null %}
-                {% if error %}
-                    <div class="alert alert-danger" role="alert">{{ msgModifyHeading }}</div>
-
-                {% else %}
-
-                    <div class="alert alert-success" role="alert">{{ msgModifyHeading }}</div>
-                {% endif %}
-            {% endif %}
         </div>
         <br>
         <a class="btn btn-secondary" href="{{ path('write') }}">Retourner à la liste des rubriques</a>

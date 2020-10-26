@@ -13,18 +13,15 @@
 
         {% if heading.headingPages.count > 0 %}
             <table class="table">
-                <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Consulter</th>
-                </tr>
-                </thead>
                 <tbody>
                 {% for headingPage in heading.headingPages %}
                     <tr>
-                        <td>{{ headingPage.titlePage }}</td>
                         <td>
-                            <a class="btn bg-primary text-white" href="{{ path('read_heading_page', {'id':headingPage.id}) }}">Consulter</a>
+                            <h2 class="h2">{{ headingPage.titlePage }}</h2>
+                            <p>{{ headingPage.contentPage | raw }}</p>
+                            <br>
+                            <p>Article rédigé par {{ headingPage.redactor.username }}.
+                                Dernière modification le {{ headingPage.modificationDate | date("d/m/Y") }} à {{ headingPage.modificationDate | date("H:i") }}.</p>
                         </td>
                     </tr>
                 {% endfor %}

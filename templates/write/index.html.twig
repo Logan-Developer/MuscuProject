@@ -27,7 +27,10 @@
                         <td>{{ heading.titleHeading }}</td>
                         <td>
                             <a class="btn bg-secondary text-white" href="{{ path('modify_heading', {'id':heading.id}) }}">Modifier</a><br><br>
-                            <a class="btn bg-danger text-white" href="{{ path('delete_heading', {'id':heading.id}) }}">Supprimer</a>
+                            <form method="post" action="{{ path('delete_heading', {'id':heading.id}) }}">
+                                <input type="submit" class="btn bg-danger text-white" value="Supprimer">
+                                <input type="hidden" name="_method" value="DELETE">
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}
@@ -41,16 +44,6 @@
         <div class="card">
             <h1 class="card-title">Ajouter une rubrique</h1>
             {{ form(add_heading_form) }}
-
-            {% if msg != null %}
-                {% if error %}
-                    <div class="alert alert-danger" role="alert">{{ msg }}</div>
-
-                {% else %}
-
-                    <div class="alert alert-success" role="alert">{{ msg }}</div>
-                {% endif %}
-            {% endif %}
         </div>
     </div>
 {% endblock %}

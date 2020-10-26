@@ -13,18 +13,8 @@
         <div class="card">
             <h1 class="card-title">Modification de l'utilisateur {{ user.username }}</h1>
             {{ form(modify_user_form) }}
-
-            {% if msg != null %}
-                {% if error %}
-                    <div class="alert alert-danger" role="alert">{{ msg }}</div>
-
-                {% else %}
-
-                    <div class="alert alert-success" role="alert">{{ msg }}</div>
-                {% endif %}
-            {% endif %}
         </div>
         <br>
-        <a class="btn btn-secondary" href="{{ path('manage_users') }}">Retourner à la liste des utilisateurs</a>
+        <a class="btn btn-secondary" href="{{ path('manage_users', {'page' : 1}) }}">Retourner à la liste des utilisateurs</a>
     </div>
 {% endblock %}

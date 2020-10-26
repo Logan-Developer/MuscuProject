@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -59,12 +61,18 @@ class Users implements UserInterface
      */
     private $changePassword;
 
+    /**
+     * @ORM\OneToMany(targetEntity=HeadingPages::class, mappedBy="redactor")
+     */
+    private $headingPages;
+
     public function __construct()
     {
 
         $this->roles = ['ROLE_USER'];
         $this->newsletterSubscriber = false;
         $this->changePassword = false;
+        $this->headingPages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -194,6 +202,37 @@ class Users implements UserInterface
     public function setChangePassword(bool $changePassword): self
     {
         $this->changePassword = $changePassword;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|HeadingPages[]
+     */
+    public function getHeadingPages(): Collection
+    {
+        return $this->headingPages;
+    }
+
+    public function addHeadingPage(HeadingPages $headingPage): self
+    {
+        if (!$this->headingPages->contains($headingPage)) {
+            $this->headingPages[] = $headingPage;
+            $headingPage->setRedactor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHeadingPage(HeadingPages $headingPage): self
+    {
+        if ($this->headingPages->contains($headingPage)) {
+            $this->headingPages->removeElement($headingPage);
+            // set the owning side to null (unless already changed)
+            if ($headingPage->getRedactor() === $this) {
+                $headingPage->setRedactor(null);
+            }
+        }
 
         return $this;
     }

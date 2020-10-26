@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Repository\HeadingPagesRepository;
 use App\Repository\HeadingsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ReadHeadingPagesController extends AbstractController
 {
     /**
-     * @Route("/read", name="see_headings")
+     * @Route("/read", name="see_headings", methods={"GET"})
      */
     public function index(HeadingsRepository $repository)
     {
@@ -25,30 +24,18 @@ class ReadHeadingPagesController extends AbstractController
 
 
     /**
-     * @Route("/read/heading/{id}", name="see_heading_pages")
+     * @Route("/read/heading/{id}", name="see_heading_pages", methods={"GET"})
      */
     public function seeHeadingPages(HeadingsRepository $repository, $id)
     {
 
         $heading = $repository->findOneBy(['id' => $id]);
 
+        if ($heading == null)
+            return $this->redirectToRoute('see_headings');
+
         return $this->render('read_heading_pages/heading_pages.html.twig', [
             'heading' => $heading
-        ]);
-    }
-
-
-
-    /**
-     * @Route("/read/heading/page/{id}", name="read_heading_page")
-     */
-    public function readHeadingPage(HeadingPagesRepository $repository, $id)
-    {
-
-        $headingPage = $repository->findOneBy(['id' => $id]);
-
-        return $this->render('read_heading_pages/read_heading_page.html.twig', [
-            'headingPage' => $headingPage
         ]);
     }
 }

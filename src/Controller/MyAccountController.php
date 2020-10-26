@@ -20,6 +20,8 @@ class MyAccountController extends AbstractController
      */
     public function index(Request $request, UsersRepository $repository, LoginFormAuthenticator $authenticator, UserPasswordEncoderInterface $encoder)
     {
+        if (!$this->isPermissionValidated())
+            return $this->redirectToRoute('home');
 
         $username = $this->getUser()->getUsername();
         $user = $repository->findOneBy(['username' => $username]);
@@ -61,7 +63,9 @@ class MyAccountController extends AbstractController
 
 
         $userFromForm = new Users(); // User with infos retrieved from the form
-        $changePasswordForm = $this->createForm(ChangePasswordType::class, $userFromForm);
+        $changePasswordForm = $this->createForm(ChangePasswordType::class, $userFromForm, [
+            'method' => 'PUT'
+        ]);
 
         if ($request->request->has('change_password')) {
             $changePasswordForm->handleRequest($request);
@@ -99,8 +103,9 @@ class MyAccountController extends AbstractController
             $subscriptionStateMsg = 'Non abonné(e)';
         }
 
-        $newslettersSubscriptionForm = $this->createForm(SubscribeNewsletterType::class, $user,
-            ['subscription_button_state'=> $subscriptionButtonState
+        $newslettersSubscriptionForm = $this->createForm(SubscribeNewsletterType::class, $user, [
+            'subscription_button_state'=> $subscriptionButtonState,
+            'method' => 'PUT'
         ]);
 
 
@@ -128,9 +133,10 @@ class MyAccountController extends AbstractController
                         $subscriptionStateMsg = 'Non abonné(e)';
                     }
 
-                    $newslettersSubscriptionForm = $this->createForm(SubscribeNewsletterType::class, $user,
-                        ['subscription_button_state'=> $subscriptionButtonState
-                        ]);
+                    $newslettersSubscriptionForm = $this->createForm(SubscribeNewsletterType::class, $user, [
+                        'subscription_button_state'=> $subscriptionButtonState,
+                        'method' => 'PUT'
+                    ]);
 
                     $this->addFlash('success', 'Le statut de votre abonnement à la newsletter a bien été modifié!');
 
@@ -147,5 +153,9 @@ class MyAccountController extends AbstractController
             'newsletter_form' => $newslettersSubscriptionForm->createView(),
             'subscription_state_msg' => $subscriptionStateMsg
         ]);
+    }
+
+    private function isPermissionValidated() {
+        return $this->getUser() !== null;
     }
 }

@@ -13,18 +13,12 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class RegistrationController extends AbstractController
 {
     /**
-     * @Route("/register", name="register")
+     * @Route("/register", name="register", methods={"GET", "POST"})
      */
     public function index(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-
-        // go to the home screen if the user is logged in
-        if ($this->getUser() != null) {
-
+        if ($this->isPermissionValidated())
             return $this->redirectToRoute('home');
-        }
-
-
 
         // build the form
         $user = new Users();
@@ -32,9 +26,6 @@ class RegistrationController extends AbstractController
 
         // handle the submit
         $registrationForm->handleRequest($request);
-
-        $error = false;
-        $msg = null;
 
         if ($registrationForm->isSubmitted()) {
 
@@ -51,26 +42,26 @@ class RegistrationController extends AbstractController
                     $entityManager->persist($user);
                     $entityManager->flush();
 
-                    $msg = 'Inscription réussie, vous pouvez dès à présent vous connecter.';
+                    $this->addFlash('success', 'Inscription réussie, vous pouvez dès à présent vous connecter.');
 
                 } catch (Exception $exception) {
 
-                    $error = true;
-                    $msg = 'Erreur, l\'adresse mail ou le pseudo entré(e) est déjà utilisé(e) par un autre utilisateur.';
+                    $this->addFlash('danger', 'Erreur, l\'adresse mail ou le pseudo entré(e) est déjà utilisé(e) par un autre utilisateur.');
                 }
 
             } else {
 
-                $error = true;
-                $msg = 'Une erreur est survenue, merci de réessayer plus tard.';
+                $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
             }
         }
 
 
         return $this->render('registration/index.html.twig', [
             'registration_form'=> $registrationForm->createView(),
-            'error' => $error,
-            'msg' => $msg,
         ]);
+    }
+
+    private function isPermissionValidated() {
+        return $this->getUser() === null;
     }
 }

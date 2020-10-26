@@ -35,15 +35,25 @@
                             <a class="btn bg-secondary text-white" href="{{ path('modify_user', {'id':user.id}) }}">Modifier</a><br><br>
 
                             {% if not user.changePassword %}
-                                <a class="btn bg-secondary text-white" href="{{ path('reset_password', {'id':user.id}) }}">Renouveler le mot de passe</a><br><br>
+                                <form method="post" action="{{ path('reset_password', {'id':user.id}) }}">
+                                    <input type="submit" class="btn bg-secondary text-white" value="Renouveler le mot de passe">
+                                    <input type="hidden" name="_method" value="PUT">
+                                </form>
+                                <br>
                             {% endif %}
 
-                            <a class="btn bg-danger text-white" href="{{ path('delete_user', {'id':user.id}) }}">Supprimer</a>
+                            <form method="post" action="{{ path('delete_user', {'id':user.id}) }}">
+                                <input type="submit" class="btn bg-danger text-white" value="Supprimer">
+                                <input type="hidden" name="_method" value="DELETE">
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
+            <div class="pagination">
+                {{ knp_pagination_render(users) }}
+            </div>
 
         {% else %}
             <p>Aucun utilisateur enregistré.</p>
@@ -52,16 +62,6 @@
         <div class="card">
             <h1 class="card-title">Ajouter un utilisateur</h1>
             {{ form(add_user_form) }}
-
-            {% if msg != null %}
-                {% if error %}
-                    <div class="alert alert-danger" role="alert">{{ msg }}</div>
-
-                {% else %}
-
-                    <div class="alert alert-success" role="alert">{{ msg }}</div>
-                {% endif %}
-            {% endif %}
         </div>
     </div>
 {% endblock %}

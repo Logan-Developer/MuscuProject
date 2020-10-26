@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\HeadingPagesRepository;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,6 +33,17 @@ class HeadingPages
      * @ORM\JoinColumn(nullable=false)
      */
     private $heading;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="headingPages")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $redactor;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $modificationDate;
 
     public function getId(): ?int
     {
@@ -70,6 +82,30 @@ class HeadingPages
     public function setHeading(?Headings $heading): self
     {
         $this->heading = $heading;
+
+        return $this;
+    }
+
+    public function getRedactor(): ?Users
+    {
+        return $this->redactor;
+    }
+
+    public function setRedactor(?Users $redactor): self
+    {
+        $this->redactor = $redactor;
+
+        return $this;
+    }
+
+    public function getModificationDate(): ?DateTimeInterface
+    {
+        return $this->modificationDate;
+    }
+
+    public function setModificationDate(DateTimeInterface $modificationDate): self
+    {
+        $this->modificationDate = $modificationDate;
 
         return $this;
     }
