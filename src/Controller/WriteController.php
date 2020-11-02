@@ -23,9 +23,6 @@ class WriteController extends AbstractController
      */
     public function index(HeadingsRepository $repository, Request $request)
     {
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $heading = new Headings();
         $addHeadingForm = $this->createForm(AddModifyHeadingType::class, $heading);
 
@@ -68,10 +65,6 @@ class WriteController extends AbstractController
      */
     public function modifyHeading(HeadingsRepository $headingsRepository, HeadingPagesRepository $headingPagesRepository, UsersRepository $usersRepository, $id, Request $request)
     {
-
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $heading = $headingsRepository->findOneBy(['id'=>$id]);
         $headingPages = $headingPagesRepository->findAll();
         $headingPage = new HeadingPages();
@@ -166,10 +159,6 @@ class WriteController extends AbstractController
      */
     public function modifyHeadingPage(HeadingPagesRepository $repository, $id, Request $request)
     {
-
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $headingPage = $repository->findOneBy(['id' => $id]);
 
         $modifyHeadingPageForm = $this->createForm(AddModifyHeadingPagesType::class, $headingPage, [
@@ -220,10 +209,6 @@ class WriteController extends AbstractController
     */
     public function deleteHeading(HeadingsRepository $repository, $id)
     {
-
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $heading = $repository->findOneBy(['id' => $id]);
 
         if ($heading != null) {
@@ -256,10 +241,6 @@ class WriteController extends AbstractController
      */
     public function deleteHeadingPage(HeadingPagesRepository $repository, $id)
     {
-
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         // TODO delete the page only if the redactor is the owner or if it's an admin
         $headingPage = $repository->findOneBy(['id' => $id]);
         $heading = $headingPage->getHeading();
@@ -277,9 +258,5 @@ class WriteController extends AbstractController
         }
 
         return $this->redirectToRoute('modify_heading', ['id' => $heading->getId()]);
-    }
-
-    private function isPermissionValidated() {
-           return !($this->getUser() === null or in_array('ROLE_USER', $this->getUser()->getRoles()));
     }
 }
