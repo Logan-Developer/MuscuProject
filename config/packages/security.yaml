@@ -47,5 +47,9 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/manageusers, roles: ROLE_ADMIN }
+         - { path: ^/myaccount, roles: IS_FULLY_AUTHENTICATED }
+         - { path: ^/register, roles: IS_ANONYMOUS }
+         - { path: ^/login, roles: IS_ANONYMOUS }
+         - { path: ^/logout, roles: IS_FULLY_AUTHENTICATED }
+         - { path: ^/write, roles: [ROLE_REDACTOR, ROLE_ADMIN] }

@@ -25,10 +25,6 @@ class ManageUsersController extends AbstractController
     public function index(UsersRepository $repository, UserPasswordEncoderInterface $passwordEncoder, Request $request,
                           PaginatorInterface $paginator, $page, EntityManagerInterface $entityManager)
     {
-
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $user = new Users();
         $addUserForm = $this->createForm(AddModifyUserType::class, $user);
 
@@ -79,9 +75,6 @@ class ManageUsersController extends AbstractController
      */
     public function deleteUser(UsersRepository $repository, $id, EntityManagerInterface $entityManager)
     {
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $admins = $repository->findByRole('ROLE_ADMIN');
 
         $user = $repository->findOneBy(['id' => $id]);
@@ -124,9 +117,6 @@ class ManageUsersController extends AbstractController
      */
     public function modifyUser(UsersRepository $repository, Request $request, $id, EntityManagerInterface $entityManager)
     {
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $admins = $repository->findByRole('ROLE_ADMIN');
 
         $user = $repository->findOneBy(['id'=>$id]);
@@ -189,9 +179,6 @@ class ManageUsersController extends AbstractController
      */
     public function resetPassword(UsersRepository $repository, $id, EntityManagerInterface $entityManager)
     {
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $user = $repository->findOneBy(['id'=>$id]);
 
         if ($user != null) {
@@ -203,9 +190,5 @@ class ManageUsersController extends AbstractController
         }
 
         return $this->redirectToRoute('manage_users', ['page' => 1]);
-    }
-
-    private function isPermissionValidated() {
-        return $this->getUser() !== null and in_array('ROLE_ADMIN', $this->getUser()->getRoles());
     }
 }

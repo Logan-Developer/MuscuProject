@@ -20,9 +20,6 @@ class MyAccountController extends AbstractController
      */
     public function index(Request $request, UsersRepository $repository, LoginFormAuthenticator $authenticator, UserPasswordEncoderInterface $encoder)
     {
-        if (!$this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         $username = $this->getUser()->getUsername();
         $user = $repository->findOneBy(['username' => $username]);
 
@@ -153,9 +150,5 @@ class MyAccountController extends AbstractController
             'newsletter_form' => $newslettersSubscriptionForm->createView(),
             'subscription_state_msg' => $subscriptionStateMsg
         ]);
-    }
-
-    private function isPermissionValidated() {
-        return $this->getUser() !== null;
     }
 }

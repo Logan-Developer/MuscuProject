@@ -17,9 +17,6 @@ class RegistrationController extends AbstractController
      */
     public function index(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        if ($this->isPermissionValidated())
-            return $this->redirectToRoute('home');
-
         // build the form
         $user = new Users();
         $registrationForm = $this->createForm(RegistrationFormType::class, $user);
@@ -59,9 +56,5 @@ class RegistrationController extends AbstractController
         return $this->render('registration/index.html.twig', [
             'registration_form'=> $registrationForm->createView(),
         ]);
-    }
-
-    private function isPermissionValidated() {
-        return $this->getUser() === null;
     }
 }
