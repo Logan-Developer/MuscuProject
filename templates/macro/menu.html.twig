@@ -45,7 +45,7 @@
                 <ul class="navbar-nav ml-auto" id="accountMenu">
                     {% if not app.user %}
                         <li class="nav-item">
-                            <a class="nav-link {% if pageTitle == 'registration' %} active {% endif %}" aria-current="page" href="{{ path('register') }}">Inscription</a>
+                            <a class="nav-link {% if pageTitle == 'registration' %} active {% endif %}" aria-current="page" href="{{ path('app_register') }}">Inscription</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if pageTitle == 'login' %} active {% endif %}" aria-current="page" href="{{ path('login') }}">Connexion</a>

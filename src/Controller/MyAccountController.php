@@ -90,14 +90,14 @@ class MyAccountController extends AbstractController
 
         if ($newsletterSubscriber) {
 
-            $subscriptionButtonState = 'Se désabonner';
-            $subscriptionStateMsg = 'Abonné(e)';
+            $subscriptionButtonState = 'Se désabonner de la newsletter';
+            $newsletterSubscriptionStateMsg = 'Abonné(e) à la newsletter';
         }
 
         else {
 
-            $subscriptionButtonState = 'S\'abonner';
-            $subscriptionStateMsg = 'Non abonné(e)';
+            $subscriptionButtonState = 'S\'abonner à la newsletter';
+            $newsletterSubscriptionStateMsg = 'Non abonné(e)';
         }
 
         $newslettersSubscriptionForm = $this->createForm(SubscribeNewsletterType::class, $user, [
@@ -120,14 +120,14 @@ class MyAccountController extends AbstractController
                     // actualise the form with the new newsletter subscription state
                     if (!$newsletterSubscriber) {
 
-                        $subscriptionButtonState = 'Se désabonner';
-                        $subscriptionStateMsg = 'Abonné(e)';
+                        $subscriptionButtonState = 'Se désabonner de la newsletter';
+                        $newsletterSubscriptionStateMsg = 'Abonné(e)';
                     }
 
                     else {
 
-                        $subscriptionButtonState = 'S\'abonner';
-                        $subscriptionStateMsg = 'Non abonné(e)';
+                        $subscriptionButtonState = 'S\'abonner à la newsletter';
+                        $newsletterSubscriptionStateMsg = 'Non abonné(e)';
                     }
 
                     $newslettersSubscriptionForm = $this->createForm(SubscribeNewsletterType::class, $user, [
@@ -148,7 +148,7 @@ class MyAccountController extends AbstractController
             'account_infos_form' => $changeAccountInfosForm->createView(),
             'password_form' => $changePasswordForm->createView(),
             'newsletter_form' => $newslettersSubscriptionForm->createView(),
-            'subscription_state_msg' => $subscriptionStateMsg
+            'newsletter_subscription_state_msg' => $newsletterSubscriptionStateMsg
         ]);
     }
 }

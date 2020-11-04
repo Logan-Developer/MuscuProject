@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\ContactRequests;
 use App\Form\ContactFormType;
+use Swift_Mailer;
+use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,9 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContactController extends AbstractController
 {
     /**
-     * @Route("/contact", name="contact")
+     * @Route("/contact", name="contact", methods={"GET", "POST"})
      */
-    public function index(Request $request)
+    public function index(Request $request, Swift_Mailer $mailer)
     {
         // build the form
         $contactRequest = new ContactRequests();
@@ -22,35 +24,31 @@ class ContactController extends AbstractController
         // handle the submit
         $contactForm->handleRequest($request);
 
-        $error = false;
-        $msg = null;
-
         if ($contactForm->isSubmitted()) {
 
             if ($contactForm->isValid()) {
 
 
-                // save the contact request in the database
+                // send the contact request
 
-                    $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->persist($contactRequest);
-                    $entityManager->flush();
+                    $message = (new Swift_Message($contactRequest->getMessageTitle()))
+                        ->setFrom($contactRequest->getEmail())
+                        ->setTo('dummyadress')
+                        ->setBody($contactRequest->getMessage(), 'text/html');
 
-                    $error = false;
-                    $msg = 'Demande de contact envoyée avec succès!';
+                    $mailer->send($message);
+
+                    $this->addFlash('success', 'Demande de contact envoyée avec succès!');
 
             } else {
 
-                $error = true;
-                $msg = 'Une erreur est survenue, merci de réessayer plus tard.';
+                $this->addFlash('danger', 'Une erreur est survenue, merci de réessayer plus tard.');
             }
         }
 
 
         return $this->render('contact/index.html.twig', [
             'contact_form'=> $contactForm->createView(),
-            'error' => $error,
-            'msg' => $msg,
         ]);
     }
 }

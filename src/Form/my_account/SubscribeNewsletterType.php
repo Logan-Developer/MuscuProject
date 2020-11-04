@@ -23,7 +23,7 @@ class SubscribeNewsletterType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Users::class,
-            'subscription_button_state' => 'Subscribe'
+            'subscription_button_state' => 'Subscribe to the newsletter'
         ]);
     }
 }
