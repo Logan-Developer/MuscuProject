@@ -57,8 +57,8 @@ class RegistrationController extends AbstractController
 
             $this->emailVerifier->sendEmailConfirmation(
                 $message = (new Swift_Message('Veuillez confirmer votre compte'))
-                    ->setFrom('dummyadress', 'ProjectMuscu')
-                    ->setTo('dummyadress')
+                    ->setFrom('MAILER_ADDRESS', 'ProjectMuscu')
+                    ->setTo('MAILER_ADDRESS')
                     ->setBody($this->renderView('registration/confirmation_email.html.twig', [
                         'signedUrl' => $context['signedUrl'],
                         'expiresAt' => $context['expiresAt']

@@ -25,7 +25,8 @@ class UsersData extends Fixture
             ->setLastname('USER')
             ->setUsername('testUser')
             ->setEmail('testUser@gmail.com')
-            ->setPassword($this->passwordEncoder->encodePassword($user, 'test'));
+            ->setPassword($this->passwordEncoder->encodePassword($user, 'test'))
+            ->setNewsletterSubscriber(true);
 
         $manager->persist($user);
 
@@ -35,7 +36,8 @@ class UsersData extends Fixture
             ->setUsername('reda')
             ->setEmail('reda@gmail.com')
             ->setPassword($this->passwordEncoder->encodePassword($user, 'reda'))
-            ->setRoles(['ROLE_REDACTOR']);
+            ->setRoles(['ROLE_REDACTOR'])
+            ->setNewsletterSubscriber(true);
 
         $manager->persist($reda);
 
@@ -45,7 +47,8 @@ class UsersData extends Fixture
             ->setUsername('coatch')
             ->setEmail('coatch@gmail.com')
             ->setPassword($this->passwordEncoder->encodePassword($user, 'coatch'))
-            ->setRoles(['ROLE_COATCH']);
+            ->setRoles(['ROLE_COATCH'])
+            ->setNewsletterSubscriber(true);
 
         $manager->persist($coatch);
 
@@ -55,7 +58,8 @@ class UsersData extends Fixture
             ->setUsername('admin')
             ->setEmail('admin@gmail.com')
             ->setPassword($this->passwordEncoder->encodePassword($user, 'admin'))
-            ->setRoles(['ROLE_ADMIN']);
+            ->setRoles(['ROLE_ADMIN'])
+            ->setNewsletterSubscriber(true);
 
         $manager->persist($admin);
 

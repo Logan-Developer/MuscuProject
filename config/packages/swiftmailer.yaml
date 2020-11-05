@@ -1,8 +1,8 @@
 swiftmailer:
     transport:        gmail
-    username:         USERNAME
-    password:         PASSWORD
-    host:             localhost
+    username:         MAILER_ADRESS
+    password:         MAILER_PASSWORD
+    host:             smtp.gmail.com
     port:             465
     encryption:       ssl
     auth-mode:        login
