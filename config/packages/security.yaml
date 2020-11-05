@@ -48,8 +48,8 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/manageusers, roles: ROLE_ADMIN }
-         - { path: ^/myaccount, roles: IS_FULLY_AUTHENTICATED }
+         - { path: ^/myaccount, roles: IS_AUTHENTICATED_FULLY }
          - { path: ^/register, roles: IS_ANONYMOUS }
          - { path: ^/login, roles: IS_ANONYMOUS }
-         - { path: ^/logout, roles: IS_FULLY_AUTHENTICATED }
+         - { path: ^/logout, roles: IS_AUTHENTICATED_FULLY }
          - { path: ^/write, roles: [ROLE_REDACTOR, ROLE_ADMIN] }

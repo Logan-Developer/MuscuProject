@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - Salle de sport{% endblock %}
+
+{% block pageTitle %}Inscription{% endblock %}
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('registration') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+        <div class="card">
+            {{ form_start(registrationForm) }}
+                {{ form_row(registrationForm.firstname) }}
+                {{ form_row(registrationForm.lastname) }}
+                {{ form_row(registrationForm.username) }}
+                {{ form_row(registrationForm.email) }}
+                {{ form_row(registrationForm.plainPassword) }}
+                {{ form_row(registrationForm.agreeTerms) }}
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+{% endblock %}

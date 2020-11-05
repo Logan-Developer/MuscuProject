@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\ContactRequests;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -19,7 +20,7 @@ class ContactFormType extends AbstractType
             ->add('messageTitle', TextType::class, [
                 'label' => 'Objet'
             ])
-            ->add('message')
+            ->add('message', CKEditorType::class)
             ->add('send', SubmitType::class, [
                 'label' => 'Envoyer'
             ])
