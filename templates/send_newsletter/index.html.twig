@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Newsletter - Salle de sport{% endblock %}
+
+{% block pageTitle %}Envoyer la newsletter{% endblock %}
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('newsletter') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+
+        <div class="card">
+            {{ form(send_newsletter_form) }}
+        </div>
+    </div>
+{% endblock %}

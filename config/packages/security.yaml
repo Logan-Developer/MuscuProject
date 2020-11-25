@@ -48,6 +48,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/manageusers, roles: ROLE_ADMIN }
+         - { path: ^/newsletter, roles: ROLE_ADMIN }
          - { path: ^/myaccount, roles: IS_AUTHENTICATED_FULLY }
          - { path: ^/register, roles: IS_ANONYMOUS }
          - { path: ^/login, roles: IS_ANONYMOUS }

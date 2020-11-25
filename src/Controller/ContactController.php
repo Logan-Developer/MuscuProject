@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\ContactRequests;
 use App\Form\ContactFormType;
 use Swift_Mailer;
 use Swift_Message;
@@ -18,8 +17,7 @@ class ContactController extends AbstractController
     public function index(Request $request, Swift_Mailer $mailer)
     {
         // build the form
-        $contactRequest = new ContactRequests();
-        $contactForm = $this->createForm(ContactFormType::class, $contactRequest);
+        $contactForm = $this->createForm(ContactFormType::class);
 
         // handle the submit
         $contactForm->handleRequest($request);
@@ -28,17 +26,16 @@ class ContactController extends AbstractController
 
             if ($contactForm->isValid()) {
 
-
                 // send the contact request
+                $contactRequest = $contactForm->getData();
+                $message = (new Swift_Message($contactRequest->getMessageTitle()))
+                    ->setFrom($contactRequest->getEmail())
+                    ->setTo($_ENV['MAILER_ADDRESS'])
+                    ->setBody($contactRequest->getMessage(), 'text/html');
 
-                    $message = (new Swift_Message($contactRequest->getMessageTitle()))
-                        ->setFrom($contactRequest->getEmail())
-                        ->setTo('MAILER_ADDRESS')
-                        ->setBody($contactRequest->getMessage(), 'text/html');
+                $mailer->send($message);
 
-                    $mailer->send($message);
-
-                    $this->addFlash('success', 'Demande de contact envoyée avec succès!');
+                $this->addFlash('success', 'Demande de contact envoyée avec succès!');
 
             } else {
 
