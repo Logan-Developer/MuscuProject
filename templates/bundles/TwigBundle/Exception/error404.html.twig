@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur 404 - Salle de sport{% endblock %}
+
+{% block pageTitle %}Erreur 404{% endblock %}
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('home') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+        <p>Oups, vous n'êtes pas au bon endroit.</p>
+    </div>
+{% endblock %}
