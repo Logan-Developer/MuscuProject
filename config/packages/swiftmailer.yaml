@@ -1,7 +1,7 @@
 swiftmailer:
     transport:        gmail
-    username:         MAILER_ADDRESS
-    password:         MAILER_PASSWORD
+    username:         logan2.humbert@gmail.com
+    password:         '%env(MAILER_PASSWORD)%'
     host:             smtp.gmail.com
     port:             465
     encryption:       ssl

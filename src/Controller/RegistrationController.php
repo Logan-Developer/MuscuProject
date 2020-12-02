@@ -57,8 +57,8 @@ class RegistrationController extends AbstractController
 
             $this->emailVerifier->sendEmailConfirmation(
                 $message = (new Swift_Message('Veuillez confirmer votre compte'))
-                    ->setFrom('MAILER_ADDRESS', 'ProjectMuscu')
-                    ->setTo('MAILER_ADDRESS')
+                    ->setFrom('logan2.humbert@gmail.com', 'ProjectMuscu')
+                    ->setTo($user->getEmail())
                     ->setBody($this->renderView('registration/confirmation_email.html.twig', [
                         'signedUrl' => $context['signedUrl'],
                         'expiresAt' => $context['expiresAt']
@@ -90,7 +90,6 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_register');
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
         $this->addFlash('success', 'Votre adresse mail a bien été vérifiée, vous pouvez désormais vous connecter!');
 
         return $this->redirectToRoute('login');

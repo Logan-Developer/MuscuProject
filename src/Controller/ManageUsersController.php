@@ -80,7 +80,7 @@ class ManageUsersController extends AbstractController
         $user = $repository->findOneBy(['id' => $id]);
 
         // there must be at least one admin registered
-        if (!in_array('ROLE_ADMIN', $user->getRoles()) or count($admins) > 1) {
+        if ((!in_array('ROLE_ADMIN', $user->getRoles())) or count($admins) > 1) {
 
             if ($user != null) {
 
@@ -120,6 +120,7 @@ class ManageUsersController extends AbstractController
         $admins = $repository->findByRole('ROLE_ADMIN');
 
         $user = $repository->findOneBy(['id'=>$id]);
+        $actualUserRoles = $user->getRoles();
 
         $modifyUserForm = $this->createForm(AddModifyUserType::class, $user, [
             'addingUser' => false,
@@ -138,7 +139,7 @@ class ManageUsersController extends AbstractController
         if ($modifyUserForm->isSubmitted()) {
 
             // there must be at least one admin registered
-            if (!in_array('ROLE_ADMIN', $user->getRoles()) or count($admins) > 1) {
+            if ((!in_array('ROLE_ADMIN', $actualUserRoles)) or count($admins) > 1) {
                 if ($modifyUserForm->isValid()) {
 
                     // save the user in the database
@@ -162,6 +163,8 @@ class ManageUsersController extends AbstractController
 
                 $this->addFlash('danger', 'Erreur, il doit y avoir au moins un administrateur enregistré!');
             }
+
+            return $this->redirectToRoute('modify_user', ['id' => $user->getId()]);
         }
 
         return $this->render('manage_users/modify.html.twig', [

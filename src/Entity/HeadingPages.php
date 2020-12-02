@@ -19,7 +19,7 @@ class HeadingPages
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $titlePage;
 
@@ -39,6 +39,8 @@ class HeadingPages
      * @ORM\JoinColumn(nullable=false)
      */
     private $redactor;
+
+
 
     /**
      * @ORM\Column(type="datetime")
@@ -62,7 +64,7 @@ class HeadingPages
         return $this;
     }
 
-    public function getContentPage(): ?string
+    public function getContentPage()
     {
         return $this->contentPage;
     }

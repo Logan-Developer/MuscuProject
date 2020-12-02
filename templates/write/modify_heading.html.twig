@@ -11,7 +11,7 @@
 {% block body %}
     <div class="main">
 
-        {% if headingPages != null %}
+        {% if heading.headingPages.count > 0 %}
             <table class="table">
                 <thead>
                 <tr>
@@ -21,13 +21,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for headingPage in headingPages %}
+                {% for headingPage in heading.headingPages %}
                     <tr>
                         <th>{{ headingPage.id }}</th>
                         <td>{{ headingPage.titlePage }}</td>
                         <td>
                             <a class="btn bg-secondary text-white" href="{{ path('modify_heading_page', {'id':headingPage.id}) }}">Modifier</a><br><br>
-                            <a class="btn bg-danger text-white" href="{{ path('delete_heading_page', {'id':headingPage.id}) }}">Supprimer</a>
+                            <form method="post" action="{{ path('delete_heading_page', {'id':headingPage.id}) }}">
+                                <input type="submit" class="btn bg-danger text-white" value="Supprimer">
+                                <input type="hidden" name="_method" value="DELETE">
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}

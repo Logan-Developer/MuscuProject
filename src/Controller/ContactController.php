@@ -30,7 +30,7 @@ class ContactController extends AbstractController
                 $contactRequest = $contactForm->getData();
                 $message = (new Swift_Message($contactRequest->getMessageTitle()))
                     ->setFrom($contactRequest->getEmail())
-                    ->setTo($_ENV['MAILER_ADDRESS'])
+                    ->setTo('logan2.humbert@gmail.com')
                     ->setBody($contactRequest->getMessage(), 'text/html');
 
                 $mailer->send($message);

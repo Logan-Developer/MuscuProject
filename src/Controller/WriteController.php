@@ -39,7 +39,7 @@ class WriteController extends AbstractController
 
                     $this->addFlash('success', 'Rubrique ajoutée avec succès!');
 
-                } catch (Exception $exception) {
+                } catch (ForeignKeyConstraintViolationException $exception) {
 
                     $this->addFlash('danger', 'Erreur, une rubrique de même titre est déjà existante!');
                 }
@@ -63,10 +63,9 @@ class WriteController extends AbstractController
     /**
      * @Route("/write/modify/heading/{id}", name="modify_heading", methods={"GET", "PUT", "POST"})
      */
-    public function modifyHeading(HeadingsRepository $headingsRepository, HeadingPagesRepository $headingPagesRepository, UsersRepository $usersRepository, $id, Request $request)
+    public function modifyHeading(HeadingsRepository $headingsRepository, UsersRepository $usersRepository, $id, Request $request)
     {
         $heading = $headingsRepository->findOneBy(['id'=>$id]);
-        $headingPages = $headingPagesRepository->findAll();
         $headingPage = new HeadingPages();
 
         $addHeadingPageForm = $this->createForm(AddModifyHeadingPagesType::class, $headingPage);
@@ -86,21 +85,38 @@ class WriteController extends AbstractController
 
                 if ($addHeadingPageForm->isValid()) {
 
-                    // save the heading page in the database
+                    // save the heading page in the database if its title is not already exists in the current heading
+                    $sameHeadingPageExists = false;
+                    foreach ($heading->getHeadingPages() as $extractedHeadingPage) {
 
-                    try {
+                        if ($extractedHeadingPage->getTitlePage() === $headingPage->getTitlePage()) {
+
+                            $sameHeadingPageExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!$sameHeadingPageExists) {
 
                         $redactor = $usersRepository->findOneBy(['username' => $this->getUser()->getUsername()]);
 
                         $headingPage->setRedactor($redactor);
                         $headingPage->setModificationDate(new DateTime());
-                        $entityManager = $this->getDoctrine()->getManager();
-                        $entityManager->persist($headingPage);
-                        $entityManager->flush();
 
-                        $this->addFlash('success', 'Article ajouté avec succès!');
+                        try {
 
-                    } catch (Exception $exception) {
+                            $entityManager = $this->getDoctrine()->getManager();
+                            $entityManager->persist($headingPage);
+                            $entityManager->flush();
+
+                            $this->addFlash('success', 'L\'article a été ajouté avec succès!');
+                            return $this->redirectToRoute('modify_heading', ['id' => $heading->getId()]);
+
+                        } catch (ForeignKeyConstraintViolationException $e) {
+                            $this->addFlash('danger', 'Erreur, cet article ne comporte aucun contenu!');
+                        }
+
+                    } else {
 
                         $this->addFlash('danger', 'Erreur, un article de même titre est déjà existant!');
                     }
@@ -134,6 +150,7 @@ class WriteController extends AbstractController
                     } catch (Exception $exception) {
 
                         $this->addFlash('danger', 'Erreur, une rubrique de même titre est déjà existante!');
+                        $heading = $headingsRepository->findOneBy(['id'=>$id]);
                     }
 
                 } else {
@@ -146,7 +163,6 @@ class WriteController extends AbstractController
 
         return $this->render('write/modify_heading.html.twig', [
             'heading' => $heading,
-            'headingPages' => $headingPages,
             'modify_heading_form' => $modifyHeadingForm->createView(),
             'add_heading_page_form' => $addHeadingPageForm->createView()
         ]);
@@ -173,20 +189,42 @@ class WriteController extends AbstractController
 
             if ($modifyHeadingPageForm->isValid()) {
 
-                // save the modified page in the database
+                // save the heading page in the database if its title is not already exists in the current heading
+                $sameHeadingPageExists = false;
+                foreach ($headingPage->getHeading()->getHeadingPages() as $extractedHeadingPage) {
 
-                try {
+                    if ($extractedHeadingPage->getTitlePage() === $headingPage->getTitlePage()) {
 
-                    $headingPage->setModificationDate(new DateTime());
-                    $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->persist($headingPage);
-                    $entityManager->flush();
+                        $sameHeadingPageExists = true;
+                        break;
+                    }
+                }
 
-                    $this->addFlash('success', 'Article modifié avec succès!');
+                // save the modified page in the database if it's allowed and if there is no other article with the same name in the same heading
+                if (in_array('ROLE_ADMIN', $this->getUser()->getRoles()) or $this->getUser()->getUsername() === $headingPage->getRedactor()->getUsername()) {
 
-                } catch (Exception $exception) {
+                    if (!$sameHeadingPageExists) {
 
-                    $this->addFlash('danger', 'Erreur, un article de même titre est déjà existant!');
+                        $headingPage->setModificationDate(new DateTime());
+
+                        try {
+                            $entityManager = $this->getDoctrine()->getManager();
+                            $entityManager->persist($headingPage);
+                            $entityManager->flush();
+
+                        } catch (ForeignKeyConstraintViolationException $e) {
+                            $this->addFlash('danger', 'Erreur, une rubrique de même titre est déjà existante!');
+                        }
+
+                        $this->addFlash('success', 'L\'article a été modifié avec succès!');
+
+                    } else {
+
+                        $this->addFlash('danger', 'Erreur, un article de même titre est déjà existant!');
+                    }
+
+                } else {
+                    $this->addFlash('danger', 'Vous n\'avez pas la permission de modifier cet article!');
                 }
 
             } else {
@@ -195,7 +233,7 @@ class WriteController extends AbstractController
             }
         }
 
-
+        $headingPage = $repository->findOneBy(['id' => $id]);
         return $this->render('write/modify_heading_page.html.twig', [
             'headingPage' => $headingPage,
             'modify_heading_page_form' => $modifyHeadingPageForm->createView()
@@ -241,20 +279,28 @@ class WriteController extends AbstractController
      */
     public function deleteHeadingPage(HeadingPagesRepository $repository, $id)
     {
-        // TODO delete the page only if the redactor is the owner or if it's an admin
         $headingPage = $repository->findOneBy(['id' => $id]);
         $heading = $headingPage->getHeading();
 
         if ($headingPage != null) {
 
-            $entityManager = $this->getDoctrine()->getManager();
+            if (in_array('ROLE_ADMIN', $this->getUser()->getRoles()) or $this->getUser()->getUsername() === $headingPage->getRedactor()->getUsername()) {
 
-            $heading->removeHeadingPage($headingPage);
-            $entityManager->persist($heading);
-            $entityManager->flush();
+                $entityManager = $this->getDoctrine()->getManager();
 
-            $entityManager->remove($headingPage);
-            $entityManager->flush();
+                $heading->removeHeadingPage($headingPage);
+                $entityManager->persist($heading);
+                $entityManager->flush();
+
+                $entityManager->remove($headingPage);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'L\'article a été supprimé avec succès!');
+
+            } else {
+                $this->addFlash('danger', 'Vous n\'avez pas la permission de supprimer cet article!');
+            }
+
         }
 
         return $this->redirectToRoute('modify_heading', ['id' => $heading->getId()]);
