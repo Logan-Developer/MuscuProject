@@ -38,7 +38,7 @@
                         </li>
                     {% endif %}
 
-                    {% if app.user and ('ROLE_REDACTOR' or 'ROLE_ADMIN') in app.user.roles  %}
+                    {% if app.user and (('ROLE_REDACTOR' in app.user.roles) or ('ROLE_ADMIN' in app.user.roles))  %}
                         <li class="nav-item">
                             <a class="nav-link {% if pageTitle == 'write' %} active {% endif %}" aria-current="page" href="{{ path('write') }}">Rédiger</a>
                         </li>
