@@ -17,7 +17,7 @@
 
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if pageTitle == 'offers' %} active {% endif %}"  aria-current="page" href="#">Offres</a>
+                        <a class="nav-link {% if pageTitle == 'offers' %} active {% endif %}"  aria-current="page" href="{{ path('show_offers') }}">Offres</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if pageTitle == 'contact' %} active {% endif %}" aria-current="page" href="{{ path('contact') }}">Contact</a>
@@ -32,6 +32,9 @@
                     {% if app.user and 'ROLE_ADMIN' in app.user.roles  %}
                         <li class="nav-item">
                             <a class="nav-link {% if pageTitle == 'manage_users' %} active {% endif %}" aria-current="page" href="{{ path('manage_users', {'page': '1'}) }}">Gérer les utilisateurs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if pageTitle == 'manage_offers' %} active {% endif %}" aria-current="page" href="{{ path('manage_offers') }}">Gérer les offres</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if pageTitle == 'newsletter' %} active {% endif %}" aria-current="page" href="{{ path('send_newsletter') }}">Envoyer la newsletter</a>

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des offres - Salle de sport{% endblock %}
+
+{% block pageTitle %}Liste des offres{% endblock %}
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('offers') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+
+        {% if offers != null %}
+            {% for row in offers|batch(3) %}
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for column in row %}
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header bg-transparent border-secondary">
+                                <p class="card-text">{{ column.name }}</p>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">{{ column.characteristics }}</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-secondary">
+                                <p class="card-text">{{ column.price }} &euro;</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aucune offre disponible actuellement, merci de revenir plus tard.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification d'une offre - Salle de sport{% endblock %}
+
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('manage_offers') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+
+        <div class="card">
+            <h1 class="card-title">Modification de l'offre {{ offer.name }}</h1>
+            {{ form(modify_offer_form) }}
+        </div>
+        <br>
+        <a class="btn btn-secondary" href="{{ path('manage_offers') }}">Retourner à la liste des offres</a>
+    </div>
+{% endblock %}

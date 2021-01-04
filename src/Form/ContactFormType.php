@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\ContactRequests;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -30,7 +29,6 @@ class ContactFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => ContactRequests::class,
         ]);
     }
 }

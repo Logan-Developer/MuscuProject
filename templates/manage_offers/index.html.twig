@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des offres - Salle de sport{% endblock %}
+
+{% block pageTitle %}Liste des offres{% endblock %}
+{% block menu %}
+    {% import 'macro/menu.html.twig' as macroMenu %}
+    {{ macroMenu.menu('manage_offers') }}
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+
+        {% if offers != null %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nom</th>
+                    <th>Caractéristiques</th>
+                    <th>Prix</th>
+                    <th>Gérer</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for offer in offers %}
+                    <tr>
+                        <th>{{ offer.id }}</th>
+                        <td>{{ offer.name }}</td>
+                        <td>{{ offer.characteristics }}</td>
+                        <td>{{ offer.price }}</td>
+                        <td>
+                            <a class="btn bg-secondary text-white" href="{{ path('modify_offer', {'id':offer.id}) }}">Modifier</a><br><br>
+
+                            <form method="post" action="{{ path('delete_offer', {'id':offer.id}) }}">
+                                <input type="submit" class="btn bg-danger text-white" value="Supprimer">
+                                <input type="hidden" name="_method" value="DELETE">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <p>Aucune offre enregistrée.</p>
+        {% endif %}
+
+        <div class="card">
+            <h1 class="card-title">Ajouter une offre</h1>
+            {{ form(add_offer_form) }}
+        </div>
+    </div>
+{% endblock %}
