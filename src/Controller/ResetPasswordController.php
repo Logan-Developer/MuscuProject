@@ -93,10 +93,7 @@ class ResetPasswordController extends AbstractController
         try {
             $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
         } catch (ResetPasswordExceptionInterface $e) {
-            $this->addFlash('reset_password_error', sprintf(
-                'Il y a eu un problème lors de la réinitialisation de votre mot de passe, veuillez réessayer plus tard. - %s',
-                $e->getReason()
-            ));
+            $this->addFlash('danger', 'Erreur, impossible de réinitialiser votre mot de passe, veuillez réessayer plus tard.');
 
             return $this->redirectToRoute('app_forgot_password_request');
         }
