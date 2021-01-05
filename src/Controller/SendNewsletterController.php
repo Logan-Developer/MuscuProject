@@ -37,7 +37,7 @@ class SendNewsletterController extends AbstractController
                 }
 
                 $message = (new Swift_Message($mail['messageTitle']))
-                    ->setFrom('logan2.humbert@gmail.com')
+                    ->setFrom($this->getParameter('mailer.mail'), 'MuscuProject')
                     ->setTo($mailAddresses)
                     ->setBody($mail['message'], 'text/html');
 

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Email de réinitialisation de mot de passe envoyé - Salle de sport{% endblock %}
+
+{% block pageTitle %}Email de réinitialisation de mot de passe envoyé!{% endblock %}
+
+{% block body %}
+    <div class="main">
+        <p>Un email contenant un lien de réinitialisation de votre mot de passe a été envoyé. Ce lien expirera dans {{ tokenLifetime|date('g') }} heure(s).</p>
+        <p>Si vous ne recevez pas cet email, veuillez vérifier vos spam ou <a href="{{ path('app_forgot_password_request') }}">essayez à nouveau</a>.</p>
+    </div>
+{% endblock %}

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,38 +33,48 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            $user->setPassword(
-                $passwordEncoder->encodePassword(
-                    $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
+        if ($form->isSubmitted()) {
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
+            if ($form->isValid()) {
+                // encode the plain password
+                $user->setPassword(
+                    $passwordEncoder->encodePassword(
+                        $user,
+                        $form->get('plainPassword')->getData()
+                    )
+                );
 
-            // generate a signed url and email it to the user
-            $signatureComponents = $verifyEmailHelper->generateSignature(
-                'app_verify_email',
-                $user->getId(),
-                $user->getEmail()
-            );
+                try {
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($user);
+                    $entityManager->flush();
 
-            $context['signedUrl'] = $signatureComponents->getSignedUrl();
-            $context['expiresAt'] = $signatureComponents->getExpiresAt();
+                    // generate a signed url and email it to the user
+                    $signatureComponents = $verifyEmailHelper->generateSignature(
+                        'app_verify_email',
+                        $user->getId(),
+                        $user->getEmail()
+                    );
 
-            $this->emailVerifier->sendEmailConfirmation(
-                $message = (new Swift_Message('Veuillez confirmer votre compte'))
-                    ->setFrom('logan2.humbert@gmail.com', 'ProjectMuscu')
-                    ->setTo($user->getEmail())
-                    ->setBody($this->renderView('registration/confirmation_email.html.twig', [
-                        'signedUrl' => $context['signedUrl'],
-                        'expiresAt' => $context['expiresAt']
-                    ]))
-            );
+                    $context['signedUrl'] = $signatureComponents->getSignedUrl();
+                    $context['expiresAt'] = $signatureComponents->getExpiresAt();
+
+                    $this->emailVerifier->sendEmailConfirmation(
+                        $message = (new Swift_Message('Veuillez confirmer votre compte'))
+                            ->setFrom($this->getParameter('mailer.mail'), 'ProjectMuscu')
+                            ->setTo($user->getEmail())
+                            ->setBody($this->renderView('registration/confirmation_email.html.twig', [
+                                'signedUrl' => $context['signedUrl'],
+                                'expiresAt' => $context['expiresAt']
+                            ]))
+                    );
+
+                } catch (ForeignKeyConstraintViolationException $e) {
+                    $this->addFlash('danger', 'Erreur, un utilisateur est déjà enregistré avec le même pseudo ou le mail email.');
+                }
+            } else {
+                $this->addFlash('danger', 'Erreur, veuillez réessayer plus tard.');
+            }
             // do anything else you need here, like send an email
 
             return $this->redirectToRoute('login');
