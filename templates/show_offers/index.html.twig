@@ -13,18 +13,19 @@
 
         {% if offers != null %}
             {% for row in offers|batch(3) %}
-                <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div class="row row-cols-1 row-cols-md-3 g-4">
                 {% for column in row %}
                     <div class="col">
-                        <div class="card">
-                            <div class="card-header bg-transparent border-secondary">
-                                <p class="card-text">{{ column.name }}</p>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">{{ column.characteristics }}</p>
-                            </div>
-                            <div class="card-footer bg-transparent border-secondary">
-                                <p class="card-text">{{ column.price }} &euro;</p>
+                        <div class="card-deck mb-3 text-center">
+                            <div class="card mb-4 box-shadow">
+                                <div class="card-header">
+                                    <h4 class="my-0 font-weight-normal">{{ column.name }}</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h1 class="card-title pricing-card-title">{{ column.price }} €<small class="text-muted">/ mois</small></h1>
+                                    <p class="card-text">{{ column.characteristics }}</p>
+                                    <button type="button" class="btn btn-lg btn-block btn-primary">Je m'abonne!</button>
+                                </div>
                             </div>
                         </div>
                     </div>
