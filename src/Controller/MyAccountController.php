@@ -145,6 +145,7 @@ class MyAccountController extends AbstractController
         }
 
         return $this->render('my_account/index.html.twig', [
+            'user' => $user,
             'account_infos_form' => $changeAccountInfosForm->createView(),
             'password_form' => $changePasswordForm->createView(),
             'newsletter_form' => $newslettersSubscriptionForm->createView(),

@@ -20,7 +20,28 @@
         </div>
 
         <div class="card">
-            <label><strong>Etat de l'abonnement à la newsletter: </strong>{{ newsletter_subscription_state_msg }}</label>
+            <p><strong>Votre abonnement: </strong></p>
+            <br>
+            {% if user.offer is null %}
+                <p>Non abonné</p>
+                <a class="btn btn-primary" href="{{ path('show_offers') }}">Voir les offres</a>
+            {% else %}
+                <div class="card-deck mb-3 text-center">
+                    <div class="card mb-4 box-shadow">
+                        <div class="card-header">
+                            <h4 class="my-0 font-weight-normal">{{ user.offer.name }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <h1 class="card-title pricing-card-title">{{ user.offer.price }} €<small class="text-muted">/ mois</small></h1>
+                            <p class="card-text">{{ user.offer.characteristics }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <p><strong>Etat de l'abonnement à la newsletter: </strong>{{ newsletter_subscription_state_msg }}</p>
             {{ form(newsletter_form) }}
         </div>
     </div>

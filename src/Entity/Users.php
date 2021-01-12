@@ -71,6 +71,11 @@ class Users implements UserInterface
      */
     private $isVerified = false;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Offers::class, inversedBy="users")
+     */
+    private $offer;
+
     public function __construct()
     {
 
@@ -250,6 +255,18 @@ class Users implements UserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getOffer(): ?Offers
+    {
+        return $this->offer;
+    }
+
+    public function setOffer(?Offers $offer): self
+    {
+        $this->offer = $offer;
 
         return $this;
     }

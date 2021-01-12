@@ -24,7 +24,11 @@
                                 <div class="card-body">
                                     <h1 class="card-title pricing-card-title">{{ column.price }} €<small class="text-muted">/ mois</small></h1>
                                     <p class="card-text">{{ column.characteristics }}</p>
-                                    <button type="button" class="btn btn-lg btn-block btn-primary">Je m'abonne!</button>
+                                    {% if not app.user %}
+                                        <a class="btn btn-lg btn-block btn-primary" href="{{ path('login') }}">Je m'abonne!</a>
+                                    {% else %}
+                                        <a class="btn btn-lg btn-block btn-primary" href="{{ path('subscribe_offer', {'id':column.id}) }}">Je m'abonne!</a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
