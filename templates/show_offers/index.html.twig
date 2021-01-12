@@ -25,9 +25,13 @@
                                     <h1 class="card-title pricing-card-title">{{ column.price }} €<small class="text-muted">/ mois</small></h1>
                                     <p class="card-text">{{ column.characteristics }}</p>
                                     {% if not app.user %}
-                                        <a class="btn btn-lg btn-block btn-primary" href="{{ path('login') }}">Je m'abonne!</a>
+                                        <form method="post" action="{{ path('login') }}">
+                                           <button type="submit">TRANSLATION_IN_PROGRESS</button>
+                                        </form>
                                     {% else %}
-                                        <a class="btn btn-lg btn-block btn-primary" href="{{ path('subscribe_offer', {'id':column.id}) }}">Je m'abonne!</a>
+                                        <form method="post" action="{{ path('subscribe_offer', {'id':column.id}) }}">
+                                            <button type="submit">TRANSLATION_IN_PROGRESS</button>
+                                        </form>
                                     {% endif %}
                                 </div>
                             </div>

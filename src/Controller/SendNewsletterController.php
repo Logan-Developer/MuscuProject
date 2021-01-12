@@ -53,7 +53,7 @@ class SendNewsletterController extends AbstractController
 
 
         return $this->render('send_newsletter/index.html.twig', [
-            'send_newsletter_form'=> $sendNewsletterForm->createView(),
+            'send_newsletter_form'=> $sendNewsletterForm->createView()
         ]);
     }
 }

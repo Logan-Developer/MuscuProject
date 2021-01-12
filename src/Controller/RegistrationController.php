@@ -25,7 +25,7 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("/register", name="app_register")
+     * @Route("/register", name="app_register", methods={"GET", "POST"})
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, VerifyEmailHelperInterface $verifyEmailHelper): Response
     {
@@ -86,7 +86,7 @@ class RegistrationController extends AbstractController
     }
 
     /**
-     * @Route("/verify/email", name="app_verify_email")
+     * @Route("/verify/email", name="app_verify_email", methods={"GET"})
      */
     public function verifyUserEmail(Request $request): Response
     {

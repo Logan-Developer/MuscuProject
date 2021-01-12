@@ -19,24 +19,18 @@
             {{ form(password_form) }}
         </div>
 
-        <div class="card">
+        <div class="card align-items-center">
             <p><strong>Votre abonnement: </strong></p>
-            <br>
             {% if user.offer is null %}
                 <p>Non abonné</p>
                 <a class="btn btn-primary" href="{{ path('show_offers') }}">Voir les offres</a>
             {% else %}
-                <div class="card-deck mb-3 text-center">
-                    <div class="card mb-4 box-shadow">
-                        <div class="card-header">
-                            <h4 class="my-0 font-weight-normal">{{ user.offer.name }}</h4>
-                        </div>
-                        <div class="card-body">
-                            <h1 class="card-title pricing-card-title">{{ user.offer.price }} €<small class="text-muted">/ mois</small></h1>
-                            <p class="card-text">{{ user.offer.characteristics }}</p>
-                        </div>
-                    </div>
-                </div>
+                <h4 class="my-0 font-weight-normal">{{ user.offer.name }}</h4>
+                <h1 class="card-title pricing-card-title">{{ user.offer.price }} €<small class="text-muted">/ mois</small></h1>
+                <form method="post" action="{{ path('unsubscribe_offer', {'id':user.offer.id}) }}">
+                    <input type="hidden" name="_method" value="PUT">
+                    <button type="submit" class="btn btn-danger">Résilier</button>
+                </form>
             {% endif %}
         </div>
 
