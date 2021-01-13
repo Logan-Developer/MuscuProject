@@ -27,7 +27,7 @@
             {% else %}
                 <h4 class="my-0 font-weight-normal">{{ user.offer.name }}</h4>
                 <h1 class="card-title pricing-card-title">{{ user.offer.price }} €<small class="text-muted">/ mois</small></h1>
-                <form method="post" action="{{ path('unsubscribe_offer', {'id':user.offer.id}) }}">
+                <form method="post" action="{{ path('unsubscribe_offer') }}">
                     <input type="hidden" name="_method" value="PUT">
                     <button type="submit" class="btn btn-danger">Résilier</button>
                 </form>

@@ -15,13 +15,16 @@ class ShowOffersController extends AbstractController
     /**
      * @Route("/offers", name="show_offers", methods={"GET"})
      */
-    public function index(OffersRepository $repository): Response
+    public function index(OffersRepository $offersRepository, UsersRepository $usersRepository): Response
     {
 
-        $offers = $repository->findAll();
+        $offers = $offersRepository->findAll();
+        $user = $usersRepository->findOneBy(['username'=>$this->getUser()->getUsername()]);
+        $subscribedOffer =$user->getOffer();
 
         return $this->render('show_offers/index.html.twig', [
-            'offers' => $offers
+            'offers' => $offers,
+            'subscribedOffer' => $subscribedOffer
         ]);
     }
 
@@ -48,11 +51,11 @@ class ShowOffersController extends AbstractController
     }
 
     /**
-     * @Route("/offers/unsubscribe/{id}", name="unsubscribe_offer", methods={"PUT"})
+     * @Route("/offers/unsubscribe", name="unsubscribe_offer", methods={"PUT"})
      */
-    public function unsubscribe(OffersRepository $offersRepository, UsersRepository $usersRepository, $id, EntityManagerInterface $entityManager): Response
+    public function unsubscribe(UsersRepository $repository, EntityManagerInterface $entityManager): Response
     {
-        $user = $usersRepository->findOneBy(['username'=>$this->getUser()->getUsername()]);
+        $user = $repository->findOneBy(['username'=>$this->getUser()->getUsername()]);
 
         try {
 
