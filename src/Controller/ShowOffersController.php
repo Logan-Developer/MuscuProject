@@ -19,8 +19,12 @@ class ShowOffersController extends AbstractController
     {
 
         $offers = $offersRepository->findAll();
-        $user = $usersRepository->findOneBy(['username'=>$this->getUser()->getUsername()]);
-        $subscribedOffer =$user->getOffer();
+        $subscribedOffer = null;
+
+        if ($this->getUser() != null) {
+            $user = $usersRepository->findOneBy(['username'=>$this->getUser()->getUsername()]);
+            $subscribedOffer =$user->getOffer();
+        }
 
         return $this->render('show_offers/index.html.twig', [
             'offers' => $offers,
